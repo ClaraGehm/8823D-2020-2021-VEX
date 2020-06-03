@@ -70,7 +70,7 @@ void consoleTrack (double spd, double spd2, double err, double err2, double drv,
 }
 
 //make into class (driving.go)
-void go (double target, motor sally, motor bob, bool there)//The PID function 
+void go (double target, motor sally, motor bob, bool there)//The PID function, the bob motor is associated with all variables that has a two after and sally is associated with the other
 {
   //Lines 76-96 is all of the variables used in this function 
   double kP = 1;
@@ -90,92 +90,92 @@ void go (double target, motor sally, motor bob, bool there)//The PID function
   double currentDistance2 = bob.rotation(deg);
   double speed;
   double speed2;
-  double overflow = 250;
-  double cap = 5000000;
+  double overflow = 250;//
+  double cap = 5000000;//max
   //double rampBy = 0.05;
-  int counter = 0;
+  int counter = 0;//a counting variable and is refrenced on line 158
   //clear encoders
 
-  while((dabs(error) > range) || (dabs(error2) > range))
+  while((dabs(error) > range) || (dabs(error2) > range))//this is all of the fun PID math and everything else that goes along with it
   {
-    currentDistance = sally.rotation(deg);
-    error = target - currentDistance;
-    currentDistance2 = bob.rotation(deg);
-    error2 = target - currentDistance2;
+    currentDistance = sally.rotation(deg);//makes current distance the amount of rotations the motor has gone through
+    error = target - currentDistance;//sets error to the distance that is left to go
+    currentDistance2 = bob.rotation(deg);//makes current distance the amount of rotations the motor has gone through
+    error2 = target - currentDistance2;//sets error to the distance that is left to go
     
-    integral += error * deltaTime;
-    derivative = error - prevErr;
-    integral2 += error2 * deltaTime;
-    derivative2 = error2 - prevErr2;
+    integral += error * deltaTime;//adds error *deltaTime to the integral
+    derivative = error - prevErr;//the derivative is set as the diffrence between error and the previous error
+    integral2 += error2 * deltaTime;//adds error *deltaTime to the integral for the other motor
+    derivative2 = error2 - prevErr2;//the derivative is set as the diffrence between error and the previous error for the other motor
     
-    if (dabs(error) > overflow)
+    if (dabs(error) > overflow)//if positive error is greater than overflow then integral is set to 0
     {
       integral = 0;
     }
-    else if(dabs(error) < range)
+    else if(dabs(error) < range)//if positive error is less than range then integral is set to 0
     {
       integral = 0;
     }
 
-    if (dabs(error2) > overflow)
+    if (dabs(error2) > overflow)//does the same thing as the function on 111 but for the other motor
     {
       integral2 = 0;
     }
-    else if (dabs(error2) < range)
+    else if (dabs(error2) < range)//does the same thing as the function on 115 but for the other motor
     {
       integral2 = 0;
     }
     //target: 50 speed influence points max.
-    if (integral > cap) 
+    if (integral > cap) //if integral is greater than it is supposed to be then it gets set to the max it can be (cap)
     {
       integral = cap;
     }
-    else if (integral < -cap)
+    else if (integral < -cap)//if integral is less than it is supposed to be then it gets set to the -cap
     {
       integral = -cap;
     }
 
-    if (integral2 > cap) 
+    if (integral2 > cap) //does the same thing as the function on 129 but for the other motor
     {
       integral2 = cap;
     }
-    else if (integral2 < -cap)
+    else if (integral2 < -cap)//does the same thing as the function on 133 but for the other motor
     {
       integral2 = -cap;
     }
 
 
     
-    speed = (error * kP) + (integral * kI) + (derivative * kD);
-    speed2 = (error2 * kP) + (integral2 * kI) + (derivative2 * kD);
+    speed = (error * kP) + (integral * kI) + (derivative * kD);//fun math
+    speed2 = (error2 * kP) + (integral2 * kI) + (derivative2 * kD);//fun math for the other motor
 
-    sally.spin(forward, speed, dps); //dps deals in far larger numbers than percent
-    bob.spin(forward, speed2, dps);
+    sally.spin(forward, speed, dps); //dps (degrees per second) deals in far larger numbers than percent
+    bob.spin(forward, speed2, dps);//this line and the one before it tell the motors how fast the need to move forward in dps
 
-    prevErr = error;
-    prevErr2 = error2;
+    prevErr = error;//sets the prevErr as error for sally
+    prevErr2 = error2;//sets the prevErr as error for bob
 
-    counter++;
+    counter++;//adds 1 to the counter, shows the amount of time that robot goes through the loop
     if(counter % 1500 == 0)
     {
       consoleTrack(speed, speed2, error, error2, derivative, derivative2, integral, integral2);
     }
-    task::sleep(25);
+    task::sleep(25);//waits 25 milliseconds
   }
 
   
-  sally.stop();
+  sally.stop();//turns off the two motors
   bob.stop();
-  there = true;
+  there = true;//changes the boolean to true
   Brain.Screen.newLine();
-  Brain.Screen.print("Done");
+  Brain.Screen.print("Done");//prints done to the screen so we would know when it actually finshed and not just when it looked done
 }
 
 int main() 
 {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  bool done = true;
+  bool done = true;//makes done true
 
-  go(1000, leftDrive, rightDrive, done);
+  go(1000, leftDrive, rightDrive, done);//calls the PID function and goes 1000 rotations
 }
