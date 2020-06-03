@@ -21,13 +21,13 @@
 
 using namespace vex;
 
-double dabs (double num)
+double dabs (double num) //This function serves as a quick way to turn a number positive. First time it is used is on line 97. 
 {
-  if (num < 0)
+  if (num < 0)//If the number is negative it will run the if statment 
   {
-    num *= -1;
+    num *= -1;//Multiplies the number by -1 to turn it positive 
   }
-  return num;
+  return num;//Returns the number 
 }
 
 /*double rampUp = 0;
@@ -40,18 +40,19 @@ double accelerate (double error, double rampBy)
   error *= rampUp;
   return error;
 }*/
+//The function abouve was an attempt at making the speeding up more reliable (did not work that well) 
 
-void printRotations(motor l, motor r)
+void printRotations(motor l, motor r)//Pretty much what the function name says, prints both motors' roation numbers
 {
-  Brain.Screen.setCursor(1,1);
-  Brain.Screen.print("Left rotations: ");
+  Brain.Screen.setCursor(1,1);//Puts the cursor on the first row and the first column
+  Brain.Screen.print("Left rotations: ");//The text and variable names need to be in seprate liness 
   Brain.Screen.print(l.rotation(degrees));
-  Brain.Screen.setCursor(2,1);
+  Brain.Screen.setCursor(2,1);//Puts the cursor on the second row and the first column 
   Brain.Screen.print("Right rotations: ");
   Brain.Screen.print(r.rotation(degrees));
 }
 
-void printSpeed(double speed, double speed2)
+void printSpeed(double speed, double speed2)//Same thing as the last function except it is for speed and it prints on the 3rd and 4th lines 
 {
   Brain.Screen.setCursor(3,1);
   Brain.Screen.print("Left speed: ");
@@ -62,15 +63,16 @@ void printSpeed(double speed, double speed2)
 
 }
 
-void consoleTrack (double spd, double spd2, double err, double err2, double drv, double drv2, double integral, double integral2)
+void consoleTrack (double spd, double spd2, double err, double err2, double drv, double drv2, double integral, double integral2)//Prints the values for both motors to the terminal 
 {
   printf("time:%f Left motor: speed %f, error %f, derivative %f, integral %f\n", Brain.Timer.value(), spd, err, drv, integral);
   printf("Right motor: speed %f, error %f, derivative %f, integral %f\n", spd2, err2, drv2, integral2);
 }
 
 //make into class (driving.go)
-void go (double target, motor sally, motor bob, bool there)  
+void go (double target, motor sally, motor bob, bool there)//The PID function 
 {
+  //Lines 76-96 is all of the variables used in this function 
   double kP = 1;
   double kD = 0.2;
   double kI = 0.005;
