@@ -46,45 +46,64 @@ int main()
       rightIntake.spin(forward);
       leftIntake.spin(forward);
     }
+    else
+    {
+      rightIntake.stop(coast);
+      leftIntake.stop(coast);
+    }
     //When L2 is pressed the intake moves backwards
-    else if(Controller1.ButtonL2.pressing())
+    if(Controller1.ButtonL2.pressing())
     {
       rightIntake.setVelocity(50, percent);
       leftIntake.setVelocity(50, percent);
       rightIntake.spin(reverse);
       leftIntake.spin(reverse);
     }
+    else
+    {
+      rightIntake.stop(coast);
+      leftIntake.stop(coast);
+    }
     //When R1 is pressed indexerMotor moves forward
-    else if(Controller1.ButtonR1.pressing())
+    if(Controller1.ButtonR1.pressing())
     {
       indexerMotor.setVelocity(50, percent);
       indexerMotor.spin(forward);
     }
+    else
+    {
+      indexerMotor.stop(hold);
+    }
     //When R2 is pressed indexerMotor moves backwards
-    else if(Controller1.ButtonR2.pressing())
+    if(Controller1.ButtonR2.pressing())
     {
       indexerMotor.setVelocity(50, percent);
       indexerMotor.spin(reverse);
     }
+    else
+    {
+      indexerMotor.stop(hold);
+    }
     //When A is pressed the flywheel moves forward
-    else if(Controller1.ButtonA.pressing())
+    if(Controller1.ButtonA.pressing())
     {
       flywheel.setVelocity(75, percent);
       flywheel.spin(forward);
     }
+    else
+    {
+      flywheel.stop(hold);
+    }
     //When B is pressed the flywheel moves backwards
-    else if(Controller1.ButtonB.pressing())
+    if(Controller1.ButtonB.pressing())
     {
       flywheel.setVelocity(75, percent);
       flywheel.spin(reverse);
     }
-    //Has all motors stop
     else
     {
-      flywheel.stop(coast);
-      indexerMotor.stop(hold);
-      rightIntake.stop(hold);
-      leftIntake.stop(hold);
+      flywheel.stop(hold);
     }
+    //Has all motors stop
   }
 }
