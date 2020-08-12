@@ -1,3 +1,198 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         5               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         5               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         5               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         8               
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         5               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         4               
+// flywheel             motor         8               
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         5               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         3               
+// indexerMotor         motor         4               
+// flywheel             motor         8               
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         5               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -41,23 +236,13 @@ int main()
     //When L1 is pressed the intake moves forward
     if(Controller1.ButtonL1.pressing())
     {
-      rightIntake.setVelocity(50, percent);
-      leftIntake.setVelocity(50, percent);
-      rightIntake.spin(forward);
-      leftIntake.spin(forward);
+      rightIntake.spin(forward, 12.0,voltageUnits::volt);
+      leftIntake.spin(forward, 12.0, voltageUnits::volt);
     }
-    else
+    else if (Controller1.ButtonL2.pressing())
     {
-      rightIntake.stop(coast);
-      leftIntake.stop(coast);
-    }
-    //When L2 is pressed the intake moves backwards
-    if(Controller1.ButtonL2.pressing())
-    {
-      rightIntake.setVelocity(50, percent);
-      leftIntake.setVelocity(50, percent);
-      rightIntake.spin(reverse);
-      leftIntake.spin(reverse);
+      rightIntake.spin(reverse, 12.0, voltageUnits::volt);
+      leftIntake.spin(reverse, 12.0, voltageUnits::volt);
     }
     else
     {
@@ -67,42 +252,31 @@ int main()
     //When R1 is pressed indexerMotor moves forward
     if(Controller1.ButtonR1.pressing())
     {
-      indexerMotor.setVelocity(50, percent);
-      indexerMotor.spin(forward);
-    }
-    else
-    {
-      indexerMotor.stop(hold);
+      indexerMotor.spin(forward, 12.0, voltageUnits::volt);
     }
     //When R2 is pressed indexerMotor moves backwards
-    if(Controller1.ButtonR2.pressing())
+    else if(Controller1.ButtonR2.pressing())
     {
-      indexerMotor.setVelocity(50, percent);
-      indexerMotor.spin(reverse);
+      indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
     }
     else
     {
-      indexerMotor.stop(hold);
+      indexerMotor.stop(coast);
     }
     //When A is pressed the flywheel moves forward
     if(Controller1.ButtonA.pressing())
     {
-      flywheel.setVelocity(75, percent);
-      flywheel.spin(forward);
-    }
-    else
-    {
-      flywheel.stop(hold);
+     
+      flywheel.spin(forward,12.0, voltageUnits::volt);
     }
     //When B is pressed the flywheel moves backwards
-    if(Controller1.ButtonB.pressing())
+    else if(Controller1.ButtonB.pressing())
     {
-      flywheel.setVelocity(75, percent);
-      flywheel.spin(reverse);
+      flywheel.spin(reverse, 12.0, voltageUnits:: volt);
     }
     else
     {
-      flywheel.stop(hold);
+      flywheel.stop(coast);
     }
     //Has all motors stop
   }
