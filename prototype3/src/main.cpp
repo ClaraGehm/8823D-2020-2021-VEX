@@ -49,10 +49,10 @@ int main()
   while(true)
   {
     //This is for the driving motorst
-    driveLB.spin(forward,Controller1.Axis3.value() - Controller1.Axis4.value() + Controller1.Axis1.value(),percent);
-    driveLF.spin(forward,Controller1.Axis3.value() + Controller1.Axis4.value() + Controller1.Axis1.value(),percent);
-    driveRB.spin(forward,Controller1.Axis3.value() + Controller1.Axis4.value() - Controller1.Axis1.value(),percent);
-    driveRF.spin(forward,Controller1.Axis3.value() - Controller1.Axis4.value() - Controller1.Axis1.value(),percent);
+    driveLB.spin(forward,Controller1.Axis3.value(), percent);
+    driveLF.spin(forward,Controller1.Axis3.value(),percent);
+    driveRB.spin(forward,Controller1.Axis2.value(),percent);
+    driveRF.spin(forward,Controller1.Axis2.value(),percent);
     
     //When L1 is pressed the intake moves forward
     if(Controller1.ButtonL1.pressing())
