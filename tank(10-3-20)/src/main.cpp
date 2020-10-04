@@ -1,3 +1,29 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         1               
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         20              
+// flywheel             motor         11              
+// driveRB              motor         10              
+// driveRF              motor         9               
+// driveLF              motor         2               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
