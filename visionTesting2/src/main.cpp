@@ -46,7 +46,7 @@ int main() {
       x = Vision20.largestObject.centerX;
       if (x < (center - OKError)) // If the object is to the left of center
       {
-        RightMotor.spin(directionType::, 25, velocityUnits::pct);
+        RightMotor.spin(directionType::fwd, 25, velocityUnits::pct);
         LeftMotor.spin(directionType::fwd, 25, velocityUnits::pct);
       } else if (x >
                  center + OKError) // If the object is to the right of center
