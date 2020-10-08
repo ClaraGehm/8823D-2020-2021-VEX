@@ -1,29 +1,3 @@
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// driveLB              motor         1               
-// leftIntake           motor         12              
-// rightIntake          motor         19              
-// indexerMotor         motor         20              
-// flywheel             motor         11              
-// driveRB              motor         10              
-// driveRF              motor         9               
-// driveLF              motor         2               
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Controller1          controller                    
-// driveLB              motor         1               
-// leftIntake           motor         12              
-// rightIntake          motor         19              
-// indexerMotor         motor         20              
-// flywheel             motor         11              
-// driveRB              motor         10              
-// driveRF              motor         9               
-// driveLF              motor         2               
-// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -53,6 +27,15 @@ using namespace vex;
 
 int x;
 int y; 
+
+void l2()
+{
+  rightIntake.spin(forward, 12.0, voltageUnits::volt);
+  leftIntake.spin(forward, 12.0, voltageUnits::volt);
+  wait(1, sec);
+  rightIntake.setPosition(0, deg);
+  leftIntake.setPosition(0, deg);
+}
 
 void changeX()
 {
@@ -91,13 +74,14 @@ int main()
     //When L1 is pressed the intake moves forward
     if(Controller1.ButtonL1.pressing()) //movs out 20 degrees 
     {
-      rightIntake.spinToPosition(0, deg);
-      leftIntake.spinToPosition(0, deg);
+      rightIntake.spin(forward, 12.0, voltageUnits::volt);
+      leftIntake.spin(forward, 12.0, voltageUnits::volt);
+      rightIntake.spinToPosition(-250, deg, false);
+      leftIntake.spinToPosition(-250, deg, true);
     }
     else if (Controller1.ButtonL2.pressing())
     {
-      rightIntake.spin(forward, 12.0, voltageUnits::volt);
-      leftIntake.spin(forward, 12.0, voltageUnits::volt);
+      l2();
     }
     else
     {
