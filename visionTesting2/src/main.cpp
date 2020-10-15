@@ -42,18 +42,20 @@ int main() {
   while (true) 
   {
     Vision20.takeSnapshot(Vision20__SIG_2);
-    if (Vision20.largestObject.exists) {
+    if (Vision20.largestObject.exists) 
+    {
       x = Vision20.largestObject.centerX;
       if (x < (center - OKError)) // If the object is to the left of center
       {
         RightMotor.spin(directionType::fwd, 25, velocityUnits::pct);
         LeftMotor.spin(directionType::fwd, 25, velocityUnits::pct);
-      } else if (x >
-                 center + OKError) // If the object is to the right of center
+      } 
+      else if (x >center + OKError) // If the object is to the right of center
       {
         RightMotor.spin(directionType::fwd, 25, velocityUnits::pct);
         LeftMotor.spin(directionType::rev, 25, velocityUnits::pct);
-      } else // The object is not to the right of center and not to the left
+      } 
+      else // The object is not to the right of center and not to the left
              // of center
       {
         LeftMotor.stop(brakeType::brake);
