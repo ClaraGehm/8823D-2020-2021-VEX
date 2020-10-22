@@ -32,26 +32,27 @@ int r = 1;
 
 void ballKickout()
 {
-  if(kill == 1)
+  if (eyes.takeSnapshot(eyes__REDB) /*&& (eyes.objects[-100].centerY) && (eyes.objects[0].centerX)*/)
   {
-    if (eyes.takeSnapshot(eyes__BLUEB) && (eyes.objects[-100].centerY) && (eyes.objects[0].centerX))
-    {
-      flywheel.spin(forward, 12.0, voltageUnits::volt);
-      Brain.Screen.printAt( 150,105, "i did it");
-    }
-    else if (eyes.takeSnapshot(eyes__REDB) && (eyes.objects[-100].centerY) && (eyes.objects[0].centerX))
-    {
-      flywheel.spin(reverse, 12.0, voltageUnits::volt);
-      Brain.Screen.printAt( 150,105, "i did it");
-    }
-    else
-    { 
-    }
+    flywheel.spin(forward, 12.0, voltageUnits::volt);
+    Brain.Screen.printAt( 150,105, "red was not the impostor");
+    wait(0.05, seconds);
   }
-  else if(kill == -1)
+  else if (eyes.takeSnapshot(eyes__BLUEB))
   {
+    flywheel.spin(reverse, 12.0, voltageUnits::volt);
+    Brain.Screen.printAt( 150,105, "i did it");
+    wait(0.2, seconds);
+  }
+  else
+  {
+    wait(0.1, seconds);
+  }
+}
 
-  }
+void antiBallKickout()
+{
+  flywheel.stop(coast);
 }
 
 void changeX()
@@ -87,16 +88,6 @@ int main()
     driveLF.spin(reverse,Controller1.Axis3.value(),percent);
     driveRB.spin(reverse,Controller1.Axis2.value(),percent);
     driveRF.spin(reverse,Controller1.Axis2.value(),percent);
-
-    //kicks out red balls
-    /*if (Controller1.ButtonRight.pressing())
-    {
-      ballKickout();
-    }
-    else
-    {
-
-    }*/
     
     //When L1 is pressed the intake moves forward
     if(Controller1.ButtonL2.pressing() && r == 1) //movs out 20 degrees 
@@ -133,20 +124,23 @@ int main()
     if(Controller1.ButtonR1.pressing())
     {
       indexerMotor.spin(forward, 12.0, voltageUnits::volt);
+      antiBallKickout();
     }
     //When R2 is pressed indexerMotor moves backwards
     else if(Controller1.ButtonR2.pressing())
     {
       indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+      ballKickout();
     }
     else
     {
+      antiBallKickout();
       indexerMotor.stop(coast);
     }
 
     //When A is pressed the flywheel moves forward
     //Directional logic------------------------------------------------------------------------------------------------------------------------------------------
-    if(x1 == -1 && y4 == -1)
+/*    if(x1 == -1 && y4 == -1)
     {
       flywheel.stop(coast);
     }
@@ -161,7 +155,7 @@ int main()
     else
     {
     }
-
+*/
     //Button input-----------------------------------------------------------------------------------------------------------------------------------------------
     if (Controller1.ButtonA.pressing()) //when button A is pressed the first time, the flywheel 
     {
