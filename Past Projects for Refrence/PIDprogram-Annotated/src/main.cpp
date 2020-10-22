@@ -70,7 +70,7 @@ void consoleTrack (double spd, double spd2, double err, double err2, double drv,
 }
 
 //make into class (driving.go)
-void go (double target, motor sally, motor bob, bool there)//The PID function, the bob motor is associated with all variables that has a two after and sally is associated with the other
+void go (double target, bool there)//The PID function, the bob motor is associated with all variables that has a two after and sally is associated with the other
 {
   //Lines 76-96 is all of the variables used in this function 
   double kP = 1;
@@ -86,8 +86,8 @@ void go (double target, motor sally, motor bob, bool there)//The PID function, t
   double prevErr = 0;
   double prevErr2 = 0;
   double range = 5;
-  double currentDistance = sally.rotation(deg);
-  double currentDistance2 = bob.rotation(deg);
+  double currentDistance = leftE.position(deg);
+  double currentDistance2 = rightE.position(deg);
   double speed;
   double speed2;
   double overflow = 250;//
@@ -98,9 +98,9 @@ void go (double target, motor sally, motor bob, bool there)//The PID function, t
 
   while((dabs(error) > range) || (dabs(error2) > range))//this is all of the fun PID math and everything else that goes along with it
   {
-    currentDistance = sally.rotation(deg);//makes current distance the amount of rotations the motor has gone through
+    currentDistance = leftE.position(deg);//makes current distance the amount of rotations the motor has gone through
     error = target - currentDistance;//sets error to the distance that is left to go
-    currentDistance2 = bob.rotation(deg);//makes current distance the amount of rotations the motor has gone through
+    currentDistance2 = rightE.position(deg);//makes current distance the amount of rotations the motor has gone through
     error2 = target - currentDistance2;//sets error to the distance that is left to go
     
     integral += error * deltaTime;//adds error *deltaTime to the integral
@@ -149,8 +149,10 @@ void go (double target, motor sally, motor bob, bool there)//The PID function, t
     speed = (error * kP) + (integral * kI) + (derivative * kD);//fun math
     speed2 = (error2 * kP) + (integral2 * kI) + (derivative2 * kD);//fun math for the other motor
 
-    sally.spin(forward, speed, dps); //dps (degrees per second) deals in far larger numbers than percent
-    bob.spin(forward, speed2, dps);//this line and the one before it tell the motors how fast the need to move forward in dps
+    driveRF.spin(forward, speed, dps); //dps (degrees per second) deals in far larger numbers than percent
+    driveRB.spin(forward, speed, dps);
+    driveLF.spin(forward, speed2, dps);//this line and the one before it tell the motors how fast the need to move forward in dps
+    driveLB.spin(forward, speed2, dps);
 
     prevErr = error;//sets the prevErr as error for sally
     prevErr2 = error2;//sets the prevErr as error for bob
@@ -164,8 +166,10 @@ void go (double target, motor sally, motor bob, bool there)//The PID function, t
   }
 
   
-  sally.stop();//turns off the two motors
-  bob.stop();
+  driveLF.stop();//turns off the two motors
+  driveLB.stop();
+  driveRB.stop();
+  driveRF.stop();
   there = true;//changes the boolean to true
   Brain.Screen.newLine();
   Brain.Screen.print("Done");//prints done to the screen so we would know when it actually finshed and not just when it looked done
@@ -177,5 +181,5 @@ int main()
   vexcodeInit();
   bool done = true;//makes done true
 
-  go(1000, leftDrive, rightDrive, done);//calls the PID function and goes 1000 rotations
+  go(10, done);//calls the PID function and goes 1000 rotations
 }
