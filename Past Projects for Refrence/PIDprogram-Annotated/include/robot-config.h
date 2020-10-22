@@ -3,14 +3,16 @@ using namespace vex;
 extern brain Brain;
 
 // VEXcode devices
-extern motor leftDrive;
+extern motor driveRB;
 extern controller Controller1;
-extern motor rightDrive;
-extern motor claw;
-extern motor arm;
+extern motor driveLF;
+extern encoder rightE;
+extern encoder leftE;
+extern motor driveLB;
+extern motor driveRF;
 
 /**
- * Used to initialize code/tasks/devices added using tools in VEXcode Text.
+ * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
  * 
  * This should be called at the start of your int main function.
  */
