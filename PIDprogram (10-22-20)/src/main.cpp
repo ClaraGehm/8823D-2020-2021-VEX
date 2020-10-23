@@ -30,18 +30,6 @@ double dabs (double num) //This function serves as a quick way to turn a number 
   return num;//Returns the number 
 }
 
-/*double rampUp = 0;
-double accelerate (double error, double rampBy)
-{
-  if(rampUp < 1)
-  {
-    rampUp += rampBy;
-  }
-  error *= rampUp;
-  return error;
-}*/
-//The function abouve was an attempt at making the speeding up more reliable (did not work that well) 
-
 void printRotations(motor l, motor r)//Pretty much what the function name says, prints both motors' roation numbers
 {
   Brain.Screen.setCursor(1,1);//Puts the cursor on the first row and the first column
@@ -181,5 +169,5 @@ int main()
   vexcodeInit();
   bool done = true;//makes done true
 
-  go(10, done);//calls the PID function and goes 1000 rotations
+  go(3, done);//calls the PID function and goes 1000 rotations
 }
