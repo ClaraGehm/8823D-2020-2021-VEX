@@ -58,27 +58,19 @@ void ballKickout()
     if (eyes.takeSnapshot(eyes__BLUEB))
     {
       flywheel.spin(forward, 12.0, voltageUnits::volt);
-      Brain.Screen.printAt( 150,105, "i did it");
-      wait(0.1,seconds);
+      Brain.Screen.printAt(150,105, "i did it");
+      wait(0.15,seconds);
     }
     else if (eyes.takeSnapshot(eyes__REDB))
     {
       flywheel.spin(reverse, 12.0, voltageUnits::volt);
-      Brain.Screen.printAt( 150,105, "i did it");
-      wait(0.1,seconds);
+      Brain.Screen.printAt(150,105, "i did it");
+      wait(0.15,seconds);
     }
-    /*
-    else if (!eyes.takeSnapshot(eyes__BLUEB) && g == -1)
-    {
-      g = 1;
-      flywheel.spin(reverse, 12.0, voltageUnits::volt);
-      wait(.5, sec);
-    }
-    */
     else
     { 
       flywheel.stop(coast);
-      wait(0.1,seconds);
+      wait(0.15,seconds);
     }
   }
   else //if(kill == -1)
@@ -133,7 +125,22 @@ int main()
     }*/
     
     //When L1 is pressed the intake moves forward
-    if(Controller1.ButtonL1.pressing())//|| (Controller1.ButtonL1.pressing() && r == -1)) //movs out 20 degrees 
+    if (Controller1.ButtonL2.pressing())
+    {
+      if (BumperG.pressing() && BumperH.pressing())
+        {
+          r = -1;
+        }
+      else
+      {
+        r = 1;
+        rightIntake.spin(forward, 12.0, voltageUnits::volt);
+        leftIntake.spin(forward, 12.0, voltageUnits::volt);
+        rightIntake.setStopping(coast);
+        leftIntake.setStopping(coast);
+      }
+    }
+    else if(Controller1.ButtonL1.pressing()&& r == 1)//|| (Controller1.ButtonL1.pressing() && r == -1)) //movs out 20 degrees 
     {
       r = 1;
       rightIntake.spin(reverse, 12.0, voltageUnits::volt);
@@ -141,17 +148,7 @@ int main()
       rightIntake.setStopping(hold);
       leftIntake.setStopping(hold);
     }
-    else if (Controller1.ButtonL2.pressing() && r == 1)
-    {
-      rightIntake.spin(forward, 12.0, voltageUnits::volt);
-      leftIntake.spin(forward, 12.0, voltageUnits::volt);
-      rightIntake.setStopping(coast);
-      leftIntake.setStopping(coast);
-      if (BumperG.pressing() && BumperH.pressing())
-      {
-        r = -1;
-      }
-    }
+    
     else
     {
       rightIntake.stop();
@@ -167,21 +164,24 @@ int main()
     if(Controller1.ButtonR1.pressing())
     {
       indexerMotor.spin(forward, 12.0, voltageUnits::volt);
+      ballKickout();
     }
     //When R2 is pressed indexerMotor moves backwards
     else if(Controller1.ButtonR2.pressing())
     {
       indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+      ballKickout();
     }
     else
     {
       indexerMotor.stop(coast);
     }
-
+/*
     if(Controller1.ButtonDown.pressing())
     {
       ballKickout();
     }
+*/
 /*
     //When A is pressed the flywheel moves forward
     //Directional logic------------------------------------------------------------------------------------------------------------------------------------------
@@ -217,5 +217,13 @@ int main()
     }
     //Has all motors stop
     */
+    if(Controller1.ButtonDown.pressing())
+    {
+      flywheel.spin(forward,-100, pct);
+    }
+    else
+    {
+      flywheel.stop();
+    }
   }
 }
