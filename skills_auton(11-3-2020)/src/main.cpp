@@ -189,7 +189,7 @@ int main()
   vexcodeInit();
   //InertialSensor.calibrate();
   //scores the ball in the goal
-  /*
+  
   wait(1, sec);
   flywheel.spin(fwd, -100, pct);
 
@@ -214,7 +214,7 @@ int main()
   drive_tl(62);
   //intake_open();
   drive_fwd(40, 1200);
-*/
+
   //cycles out the balls
   indexerMotor.spin(reverse, 100, percent);
   //intake_close(2);
@@ -222,9 +222,9 @@ int main()
   wait(3, sec);
   flywheel.spin(forward);
   intake_close(3);
-/*
+
   //backs up and turns towards 
   drive_bwd(60, 999);
   drive_tr(60); 
-  */
+  
 }
