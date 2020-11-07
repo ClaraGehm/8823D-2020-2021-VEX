@@ -19,6 +19,174 @@
 // BallDetect           limit         C               
 // BallExit             limit         D               
 // ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         15              
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         11              
+// flywheel             motor         20              
+// driveRB              motor         1               
+// driveRF              motor         9               
+// driveLF              motor         2               
+// eyes                 vision        16              
+// BumperG              bumper        G               
+// BumperH              bumper        H               
+// rightE               encoder       A, B            
+// leftE                encoder       E, F            
+// InertialSensor       inertial      3               
+// BallDetect           limit         C               
+// BallExit             limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         15              
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         11              
+// flywheel             motor         20              
+// driveRB              motor         1               
+// driveRF              motor         9               
+// driveLF              motor         2               
+// eyes                 vision        16              
+// BumperG              bumper        G               
+// BumperH              bumper        H               
+// rightE               encoder       A, B            
+// leftE                encoder       E, F            
+// InertialSensor       inertial      3               
+// BallDetect           limit         C               
+// BallExit             limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         15              
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         11              
+// flywheel             motor         20              
+// driveRB              motor         1               
+// driveRF              motor         9               
+// driveLF              motor         2               
+// eyes                 vision        16              
+// BumperG              bumper        G               
+// BumperH              bumper        H               
+// rightE               encoder       A, B            
+// leftE                encoder       E, F            
+// InertialSensor       inertial      3               
+// BallDetect           limit         C               
+// BallExit             limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         15              
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         11              
+// flywheel             motor         20              
+// driveRB              motor         1               
+// driveRF              motor         9               
+// driveLF              motor         2               
+// eyes                 vision        16              
+// BumperG              bumper        G               
+// BumperH              bumper        H               
+// rightE               encoder       A, B            
+// leftE                encoder       E, F            
+// InertialSensor       inertial      3               
+// BallDetect           limit         C               
+// BallExit             limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         15              
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         11              
+// flywheel             motor         20              
+// driveRB              motor         1               
+// driveRF              motor         9               
+// driveLF              motor         2               
+// eyes                 vision        16              
+// BumperG              bumper        G               
+// BumperH              bumper        H               
+// rightE               encoder       A, B            
+// leftE                encoder       E, F            
+// InertialSensor       inertial      3               
+// BallDetect           limit         C               
+// BallExit             limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         15              
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         11              
+// flywheel             motor         20              
+// driveRB              motor         1               
+// driveRF              motor         9               
+// driveLF              motor         2               
+// eyes                 vision        16              
+// BumperG              bumper        G               
+// BumperH              bumper        H               
+// rightE               encoder       A, B            
+// leftE                encoder       E, F            
+// InertialSensor       inertial      3               
+// BallDetect           limit         C               
+// BallExit             limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         15              
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         11              
+// flywheel             motor         20              
+// driveRB              motor         1               
+// driveRF              motor         9               
+// driveLF              motor         2               
+// eyes                 vision        16              
+// BumperG              bumper        G               
+// BumperH              bumper        H               
+// rightE               encoder       A, B            
+// leftE                encoder       E, F            
+// InertialSensor       inertial      3               
+// BallDetect           limit         C               
+// BallExit             limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// driveLB              motor         15              
+// leftIntake           motor         12              
+// rightIntake          motor         19              
+// indexerMotor         motor         11              
+// flywheel             motor         20              
+// driveRB              motor         1               
+// driveRF              motor         9               
+// driveLF              motor         2               
+// eyes                 vision        16              
+// BumperG              bumper        G               
+// BumperH              bumper        H               
+// rightE               encoder       A, B            
+// leftE                encoder       E, F            
+// InertialSensor       inertial      3               
+// BallDetect           limit         C               
+// BallExit             limit         D               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -204,18 +372,6 @@ int main()
   intake_open();
   drive_fwd(40, 1100);
 
-  //cycles out the balls
- // indexerMotor.spin(reverse, 100, percent);
-  //flywheel.spin(reverse, 100, percent);
-  /*int count = 0;
-  while(count < 2)
-  {
-    intake_close(.1);
-    if (BallDetect.value() == 1)
-    {
-      count += 1;
-    }
-  }*/
   //detects for the first red ball ot go through the system
   while(BallDetect.value()==0)
   {
