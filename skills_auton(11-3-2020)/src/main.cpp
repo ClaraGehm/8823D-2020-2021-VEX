@@ -190,7 +190,7 @@ int main()
   //InertialSensor.calibrate();
   //scores the ball in the goal
   
-  wait(1, sec);
+  //wait(1, sec);
   flywheel.spin(fwd, -100, pct);
 
   intake_open();
