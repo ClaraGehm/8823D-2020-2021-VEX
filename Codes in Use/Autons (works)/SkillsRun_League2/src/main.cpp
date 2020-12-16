@@ -49,38 +49,55 @@ competition Competition;
 /*---------------------------------------------------------------------------*/
 int kill = 1;
 
+//forward speed, distance
 void drive_fwd(int speed, int dist)
 {
-  driveLB.setVelocity(speed,pct);
-  driveRB.setVelocity(speed,pct);
-  driveLF.setVelocity(speed,pct);
-  driveRF.setVelocity(speed,pct);
-  driveLB.spinFor(fwd,dist,deg,false);
-  driveRB.spinFor(fwd,dist,deg,false);
-  driveLF.spinFor(fwd,dist,deg,false);
-  driveRF.spinFor(fwd,dist,deg);
+  leftE.setPosition(0, deg);
+  rightE.setPosition(0, deg);
+  Brain.Screen.setPenColor(white);
+  while (-leftE.value() <= dist && rightE.value() <= dist)
+  {
+    driveLB.spin(fwd, speed, pct);
+    driveRB.spin(fwd, speed, pct);
+    driveLF.spin(fwd, speed, pct);
+    driveRF.spin(fwd, speed, pct);
+  
+    wait(20, msec);
+    Brain.Screen.clearScreen();
+    Brain.Screen.printAt(50, 50, "heading %5.2d", rightE.value());
+    Brain.Screen.printAt(50, 75, "heading %5.2d", leftE.value());
+  }
   driveLB.stop(brake);
   driveRB.stop(brake);
   driveLF.stop(brake);
   driveRF.stop(brake);
 }
 
+//drive backward (speed, distance)
 void drive_bwd(int speed, int dist)
 {
-  driveLB.setVelocity(-speed,pct);
-  driveRB.setVelocity(-speed,pct);
-  driveLF.setVelocity(-speed,pct);
-  driveRF.setVelocity(-speed,pct);
-  driveLB.spinFor(fwd,-dist,deg,false);
-  driveRB.spinFor(fwd,-dist,deg,false);
-  driveLF.spinFor(fwd,-dist,deg,false);
-  driveRF.spinFor(fwd,-dist,deg);
+  leftE.setPosition(0, deg);
+  rightE.setPosition(0, deg);
+  Brain.Screen.setPenColor(white);
+  while (-leftE.value() >= -dist && rightE.value() >= -dist)
+  {
+    driveLB.spin(fwd, -speed, pct);
+    driveRB.spin(fwd, -speed, pct);
+    driveLF.spin(fwd, -speed, pct);
+    driveRF.spin(fwd, -speed, pct);
+    
+    wait(20, msec);
+    Brain.Screen.clearScreen();
+    Brain.Screen.printAt(50, 125, "RightEncoder %d", rightE.value());
+    Brain.Screen.printAt(50, 100, "LeftEncoder %d", leftE.value());
+  }
   driveLB.stop(brake);
   driveRB.stop(brake);
   driveLF.stop(brake);
   driveRF.stop(brake);
 }
 
+//turn right function (degrees)
 void drive_tr(/*int speed,*/ int target)
 {
   InertialSensor.setRotation(0,degrees);
@@ -99,9 +116,10 @@ void drive_tr(/*int speed,*/ int target)
   driveRF.stop(brake);
 }
 
+//turn left function (degrees)
 void drive_tl(int target)
 {
-  InertialSensor.setHeading(0,degrees);
+  InertialSensor.setRotation(0,degrees);
   wait(100,msec);
   int speed = (target-InertialSensor.rotation(degrees))/3;
   while(InertialSensor.rotation(degrees) > -target)
@@ -118,42 +136,38 @@ void drive_tl(int target)
   driveRF.stop(brake);
 }
 
+//intake opening function
 void intake_open()
 {
-  while(!BumperG.pressing() && !BumperH.pressing())
+  while(!BumperG.pressing() || !BumperH.pressing())
   {
-  leftIntake.setVelocity(-95,pct);
-  rightIntake.setVelocity(-100,pct);
-  leftIntake.spin(fwd);
-  rightIntake.spin(fwd);
-  Brain.Screen.print(BumperG.value());
+    leftIntake.spin(reverse, 12.0, voltageUnits::volt);
+    rightIntake.spin(reverse, 12.0, voltageUnits::volt);
+    Brain.Screen.print(BumperG.value());
   }
   leftIntake.stop(hold);
   rightIntake.stop(hold);
 }
 
+//intake CLOSING function (motors forward the intake)
 void intake_close(float stay)
 {
-  leftIntake.setVelocity(-100,pct);
-  rightIntake.setVelocity(-100,pct);
-  leftIntake.spin(reverse);
-  rightIntake.spin(reverse);
+  leftIntake.spin(forward, 12.0, voltageUnits::volt);
+  rightIntake.spin(forward, 12.0, voltageUnits::volt);
   wait(stay, sec);
   leftIntake.stop(coast);
   rightIntake.stop(coast);
 }
 
+//ball kickout function
 void ballKickout()
 {
   if(kill == 1)
   {
-    
-  
     if (eyes.takeSnapshot(eyes__REDB))
     {
       Brain.Screen.setPenColor(red);
       Brain.Screen.printAt(200,100,"Red Ball Found");
-     
      if(!BallExit.pressing())
       {
         flywheel.spin(reverse, 12.0, voltageUnits::volt);
@@ -162,7 +176,6 @@ void ballKickout()
           break;
         }*/
       }
-    
     else if(BallExit.pressing())
     {   wait(100,msec);
         flywheel.stop();
@@ -170,9 +183,7 @@ void ballKickout()
         Brain.Screen.printAt(200,130,"Red Ball Fired");
 
         Controller1.Screen.clearLine(160); 
-    } 
-        
-      
+    }  
     }
     else if (eyes.takeSnapshot(eyes__BLUEB))
     {
@@ -189,7 +200,10 @@ void ballKickout()
     }
   }
 }
-void pre_auton(void) {
+
+//preauton (runs before auton, calibrations go here)
+void pre_auton(void) 
+{
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   InertialSensor.calibrate();
@@ -207,20 +221,31 @@ void pre_auton(void) {
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
-
-void autonomous(void) {
+double turnTrack;
+void autonomous(void) 
+{
+  /////////////////////////////////////////////
+  //     FIRST GOAL
+  /////////////////////////////////////////////
+  
+  //goal 1 (hodd lifting up and scoring)
   InertialSensor.setHeading(0, deg);
   flywheel.setVelocity(100,percent);
-  flywheel.spinFor(forward,-280,degrees);
+  flywheel.spinFor(forward,-380,degrees);
   flywheel.stop();
+
+  //////////////////////////////////////////////
+  //    SECOND GOAL
+  //////////////////////////////////////////////
 
   intake_open();
 
-  //moves forward
-  drive_fwd(30, 1400);
+  //moves forward away from the goal
+  drive_fwd(30, 900);
   flywheel.stop(coast);
-  leftIntake.spin(reverse);
-  rightIntake.spin(reverse);
+  //opens the intake to intake first ball 
+  leftIntake.spin(forward, 12.0, voltageUnits::volt);
+  rightIntake.spin(forward, 12.0, voltageUnits::volt);
   indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
   drive_fwd(30, 100);
 
@@ -229,31 +254,74 @@ void autonomous(void) {
   wait(.35, sec);
   indexerMotor.stop(coast); 
 
-  //intakes ball
-  //intake_open();
-
   //moves toward corner goal
-  drive_fwd(30, 950);
+  InertialSensor.setHeading(0, degrees);
+  Brain.Screen.printAt(100, 100, "Sensor Value: %f", InertialSensor.value());
+  drive_fwd(30, 600); //value between intaking first ball and turning before goal
   drive_tl(54);
-  //intake_open();
-  drive_fwd(40, 1200);
+  drive_fwd(40, 580);
   flywheel.spin(reverse, 12.0, voltageUnits::volt);
   indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
   leftIntake.stop(); 
   rightIntake.stop();
+  //waits until the ball exits the system and scores into the corner goal (2nd goal)
   while (!BallExit.pressing()) 
   {
 
   }
+  //waits a second so we know it has deffinitly left the system 
   wait(.2, seconds); 
   flywheel.stop();
-  //intake_open();
-  drive_bwd(30, 2500);
-  drive_tr(89);
-  intake_open();
-  drive_fwd(40, 1000);
-}
 
+  /////////////////////////////////////////////////
+  //    THIRD GOAL
+  /////////////////////////////////////////////////
+ 
+  //backs away from the goal, opens intakes, turns, and heads towards the ball in front of the third goal
+  drive_bwd(30, 1800);
+  intake_open();
+  drive_tr(53);
+  drive_fwd(30, 1350);
+  
+  //starts intaking the ball and keeps going until it is in the system (triggered by ballDetect), then turns everything off
+  leftIntake.spin(fwd,12.0,voltageUnits::volt);
+  rightIntake.spin(fwd,12.0,voltageUnits::volt);
+  while(!BallDetect.pressing())
+  {
+
+  }
+  indexerMotor.stop();
+  leftIntake.stop();
+  rightIntake.stop();
+
+  //turns towards the third goal and approaches it.
+  drive_tl(35);
+  drive_fwd(30,210);
+
+  //runs the indexer and flywheel until the ball leaves the system 
+  while(!BallExit.pressing())
+  {
+    flywheel.spin(reverse,12.0,voltageUnits::volt);
+    indexerMotor.spin(reverse,12.0,voltageUnits::volt);
+  }
+  //wait sometime to make sure the ball leaves the system then stops the motors 
+  wait(200,msec);
+  flywheel.stop();
+  indexerMotor.stop();
+
+  //////////////////////////////////////////////////////////////////////
+  //      FOURTH GOAL
+  //////////////////////////////////////////////////////////////////////
+
+  //backs away from the goal and starts heading towards the ball for the first goal
+  drive_bwd(30,650);
+  drive_tr(65);
+  intake_open();
+  drive_fwd(30,1500);
+
+  //intakes ball for fourth goal
+  intake_close(2);
+}
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
