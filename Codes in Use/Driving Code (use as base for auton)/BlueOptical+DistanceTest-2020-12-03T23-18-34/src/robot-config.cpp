@@ -17,8 +17,6 @@ signature eyes__BLUEB = signature (2, -2185, -1063, -1624, 3861, 5223, 4542, 3, 
 signature eyes__SIG_3 = signature (3, 0, 0, 0, 0, 0, 0, 3, 0);
 vision eyes = vision (PORT16, 15, eyes__REDB, eyes__BLUEB, eyes__SIG_3);
 /*vex-vision-config:end*/
-bumper BumperG = bumper(Brain.ThreeWirePort.G);
-bumper BumperH = bumper(Brain.ThreeWirePort.H);
 limit BallDetect = limit(Brain.ThreeWirePort.C);
 limit BallExit = limit(Brain.ThreeWirePort.D);
 controller Controller1 = controller(primary);
@@ -32,6 +30,8 @@ motor driveRF = motor(PORT9, ratio6_1, false);
 motor driveLF = motor(PORT2, ratio6_1, true);
 optical OpticalSensor = optical(PORT7);
 distance DistanceSensor = distance(PORT6);
+limit LIntakeLimit = limit(Brain.ThreeWirePort.G);
+limit RIntakeLimit = limit(Brain.ThreeWirePort.H);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable
