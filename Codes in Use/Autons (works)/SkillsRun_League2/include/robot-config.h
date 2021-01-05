@@ -16,8 +16,6 @@ extern signature eyes__SIG_5;
 extern signature eyes__SIG_6;
 extern signature eyes__SIG_7;
 extern vision eyes;
-extern bumper BumperG;
-extern bumper BumperH;
 extern limit BallDetect;
 extern limit BallExit;
 extern controller Controller1;
@@ -29,6 +27,8 @@ extern motor flywheel;
 extern motor driveRB;
 extern motor driveRF;
 extern motor driveLF;
+extern limit LIntakeLimit;
+extern limit RIntakeLimit;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
