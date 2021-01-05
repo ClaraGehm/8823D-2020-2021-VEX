@@ -14,8 +14,6 @@
 // leftE                encoder       E, F            
 // rightE               encoder       A, B            
 // eyes                 vision        16              
-// BumperG              bumper        G               
-// BumperH              bumper        H               
 // BallDetect           limit         C               
 // BallExit             limit         D               
 // Controller1          controller                    
@@ -29,6 +27,8 @@
 // driveLF              motor         2               
 // OpticalSensor        optical       7               
 // DistanceSensor       distance      6               
+// LIntakeLimit         limit         G               
+// RIntakeLimit         limit         H               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 
@@ -161,13 +161,13 @@ void drive_tl(int target)
 
 void intake_open()
 {
-  while(!BumperG.pressing() && !BumperH.pressing())
+  while(!LIntakeLimit.pressing() && !RIntakeLimit.pressing())
   {
   leftIntake.setVelocity(-95,pct);
   rightIntake.setVelocity(-100,pct);
   leftIntake.spin(fwd);
   rightIntake.spin(fwd);
-  Brain.Screen.print(BumperG.value());
+  Brain.Screen.print(LIntakeLimit.value());
   }
   leftIntake.stop(hold);
   rightIntake.stop(hold);
@@ -261,7 +261,7 @@ void autonomous(void)
   drive_fwd(30, 1490);
 
   //moves toward corner goal
-  drive_tl(60);
+  drive_tl(53); //was at 60
   intake_open();
   drive_fwd(40, 600);
 
@@ -375,7 +375,7 @@ void usercontrol(void)
       
     else if(Controller1.ButtonL1.pressing())//|| (Controller1.ButtonL1.pressing() && r == -1)) //movs out 20 degrees 
     {
-       if (BumperG.pressing() && BumperH.pressing())
+       if (LIntakeLimit.pressing() && RIntakeLimit.pressing())
       {
         //r = -1;
         rightIntake.stop();
