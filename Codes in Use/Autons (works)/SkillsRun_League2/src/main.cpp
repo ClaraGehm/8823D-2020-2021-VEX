@@ -14,8 +14,6 @@
 // leftE                encoder       E, F            
 // rightE               encoder       A, B            
 // eyes                 vision        16              
-// BumperG              bumper        G               
-// BumperH              bumper        H               
 // BallDetect           limit         C               
 // BallExit             limit         D               
 // Controller1          controller                    
@@ -27,6 +25,8 @@
 // driveRB              motor         1               
 // driveRF              motor         9               
 // driveLF              motor         2               
+// LIntakeLimit         limit         G               
+// RIntakeLimit         limit         H               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -134,16 +134,17 @@ void drive_tl(int target)
   driveLF.stop(brake);
   driveRB.stop(brake);
   driveRF.stop(brake);
+  Brain.Screen.printAt(10, 10, "&f", InertialSensor.rotation());
 }
 
 //intake opening function
 void intake_open()
 {
-  while(!BumperG.pressing() || !BumperH.pressing())
+  while(!LIntakeLimit.pressing() && !RIntakeLimit.pressing())
   {
     leftIntake.spin(reverse, 12.0, voltageUnits::volt);
     rightIntake.spin(reverse, 12.0, voltageUnits::volt);
-    Brain.Screen.print(BumperG.value());
+    Brain.Screen.print(LIntakeLimit.value());
   }
   leftIntake.stop(hold);
   rightIntake.stop(hold);
@@ -207,7 +208,6 @@ void pre_auton(void)
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   InertialSensor.calibrate();
-  wait(1.5, seconds);
   // All activities that occur before the competition starts
   // Example: clearing encoders, setting servo positions, ...
 }
@@ -290,6 +290,7 @@ void autonomous(void)
   {
 
   }
+  wait(.5, seconds);
   indexerMotor.stop();
   leftIntake.stop();
   rightIntake.stop();
@@ -315,12 +316,16 @@ void autonomous(void)
 
   //backs away from the goal and starts heading towards the ball for the first goal
   drive_bwd(30,650);
-  drive_tr(65);
+  drive_tr(67);
   intake_open();
-  drive_fwd(30,1500);
+  drive_fwd(30,1600);
 
   //intakes ball for fourth goal
   intake_close(2);
+
+  //turns and heads towards the fourth goal
+  drive_tl(35);
+  drive_fwd(30, 1000); 
 }
 
 /*---------------------------------------------------------------------------*/
@@ -359,7 +364,7 @@ void usercontrol(void)
       
     else if(Controller1.ButtonL1.pressing())//|| (Controller1.ButtonL1.pressing() && r == -1)) //movs out 20 degrees 
     {
-       if (BumperG.pressing() && BumperH.pressing())
+       if (LIntakeLimit.pressing() && RIntakeLimit.pressing())
       {
         //r = -1;
         rightIntake.stop();
