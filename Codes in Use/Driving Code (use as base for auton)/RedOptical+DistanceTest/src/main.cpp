@@ -64,99 +64,276 @@ void pre_auton(void)
 int kill = 1;
 
 
-  void drive_fwd(int speed, int dist)
-{
-  leftE.setPosition(0, deg);
-  rightE.setPosition(0, deg);
-  Brain.Screen.setPenColor(white);
-  while (-leftE.value() <= dist && rightE.value() <= dist)
-  {
-    if(-leftE.value() == rightE.value())
-    {
-      driveLB.spin(fwd, speed, pct);
-      driveRB.spin(fwd, speed, pct);
-      driveLF.spin(fwd, speed, pct);
-      driveRF.spin(fwd, speed, pct);
-    }
-    /*
-    else if(-leftE.value() < rightE.value())
-    {
-      driveLB.spin(fwd, speed+5, pct);
-      driveRB.spin(fwd, speed, pct);
-      driveLF.spin(fwd, speed+5, pct);
-      driveRF.spin(fwd, speed, pct);
-    }
-    else if(-leftE.value() > rightE.value())
-    {
-      driveLB.spin(fwd, speed, pct);
-      driveRB.spin(fwd, speed+5, pct);
-      driveLF.spin(fwd, speed, pct);
-      driveRF.spin(fwd, speed+5, pct);
-    }
-    */
-    wait(20, msec);
-    Brain.Screen.clearScreen();
-    Brain.Screen.printAt(50, 50, "heading %5.2d", rightE.value());
-    Brain.Screen.printAt(50, 100, "heading %5.2d", leftE.value());
-  }
-  driveLB.stop(brake);
-  driveRB.stop(brake);
-  driveLF.stop(brake);
-  driveRF.stop(brake);
-}
+///////////////////////////Proportional Turn variables//////////////////////////////////////////////////////////////////
+
+  double turnkP = .5;     //tuning value for our turnError.
+  double turnSpeed = 0; // motor speed, starts at zero.
+  double turnError; // the difference between our turnTarget and our current position
+
+//////////////////////////// Slew Rate Acceleration variables /////////////////////////////////////////////////////////////////////////// 
   
+  int motorSpeedCap = 5;  //maximum motorSpeed starts at this value, but will grow every few msecs 
+  int step = 3;           //by a value of "step", this creates a slew rate of speed growth.
+  // the motorSpeed will grow towards 100, and will then be controlled by our PID value,
+  // since they will be smaller than 100, the eventual maximum motorSpeed.
+ 
 
-void drive_bwd(int speed, int dist)
-{
-  driveLB.setVelocity(-speed,pct);
-  driveRB.setVelocity(-speed,pct);
-  driveLF.setVelocity(-speed,pct);
-  driveRF.setVelocity(-speed,pct);
-  driveLB.spinFor(fwd,-dist,deg,false);
-  driveRB.spinFor(fwd,-dist,deg,false);
-  driveLF.spinFor(fwd,-dist,deg,false);
-  driveRF.spinFor(fwd,-dist,deg);
-  driveLB.stop(brake);
-  driveRB.stop(brake);
-  driveLF.stop(brake);
-  driveRF.stop(brake);
+//////////////////////////Drive PID variables//////////////////////////////////////////////////////////////////////////////////////////////
+
+double kP = 0.08; //tuning value for proportional (the dominiant value)
+
+double kI = 0.00001; //tuning value for integral (adds further speed to overcome resistance, especially when approching the 
+// target, because the motorSpeed will be fairly small then)
+double kD = 0.02; //tuning value for derivitive (further tuning
+//              the speed at which we approach our target by comparing our errors every 20 msecs)
+
+double error;      // the difference between where we are and where we want to be.
+double prevError=0; // our previous error. these values update every 20 msecs, so it equals the error 20 msecs ago.
+//                 there is no previous error at the start of the program, we set this to 0.            
+
+double derivative; // equals the rate of change (error minus prevError). 
+//                 the more our bot accelerates, the bigger the difference btwn the two, and this builds up. 
+//                 multiply this by Kd to tune it and subtract it from motorPower (to even out jerks or fast accelerations)   
+double totalError = 0;
+ //the sum of all errors. if the robot stops or slows down, the totalError skyrockets because the errors will still be fairly large
+ // this multiplied by kI added to motorSpeed gives a little "push" to overcome the robots weight, or other resistance.
+
+double integralCap = 90000; //maximum allowed totalError, keeps it from skyrocketing to an unusably high value
+                        //once the robot overcomes the resistance, the integral will NOT shrink, so we must limit its size.
+double encoderAvg;
+  //averaging tracker wheels to use in drive_fwd PID loop.
+
+double motorSpeed; // the sum of the tuned Proportional,Integral,and Derivative.
+
+bool timerReset = true; // boolean acts as an on/off switch for our timer. when this is true, the timer
+//will constantly reset, and therefore only begin counting when this is set to false.
+float timerCap = 1.7;
+
+// A global instance of competition
+competition Competition;
+// define your global instances of motors and other devices here
+/*---------------------------------------------------------------------------*/
+/*                          Pre-Autonomous Functions                         */
+/*                                                                           */
+/*  You may want to perform some actions before the competition starts.      */
+/*  Do them in the following function.  You must return from this function   */
+/*  or the autonomous and usercontrol tasks will not be started.  This       */
+/*  function is only called once after the V5 has been powered on and        */
+/*  not every time that the robot is disabled.                               */
+/*---------------------------------------------------------------------------*/
+
+void pre_auton(void) 
+{                                 // Initializing Robot Configuration. DO NOT REMOVE!
+  vexcodeInit();
+  InertialSensor.calibrate();
+  //wait(1.5, seconds);
+  // All activities that occur before the competition starts
+  // Example: clearing encoders, setting servo positions, ...
 }
 
-void drive_tr(/*int speed,*/ int target)
+//////////////// DRIVE FORWARD PID CONTROL LOOP //////////////////////////////////////////////////////////////////////////
+  void drive_fwd(int target)
 {
-  InertialSensor.setRotation(0,degrees);
-  wait(100,msec);
-  int speed = 50; // (target-InertialSensor.rotation(degrees))/3;
-  while(InertialSensor.rotation(degrees) < target)
-  {
-    driveLB.spin(forward,speed,pct);
-    driveLF.spin(forward,speed,pct);
-    driveRF.spin(reverse,speed,pct);
-    driveRB.spin(reverse,speed,pct);
+  leftE.setPosition(0,degrees); // clear encoders and brain timer
+  rightE.setPosition(0,degrees);
+  Brain.Timer.reset();
+
+  while(Brain.Timer.value() < timerCap) // loop will run as long as the timer remains under time limit.
+  {                                     
+    if(timerReset == true)  //constantly reset timer as long as boolean is true (which it is, so the loop will
+    {                       //run forever until the boolean is kept false for the set amount of time).
+      Brain.Timer.reset();
+      Brain.Screen.printAt(10, 160,"timerReset = true");
+    }
+
+    if(derivative < 1 && derivative > -1) //if derivative (rate of change) remains at approx. 0, set the boolean to false.
+    {                                 // this will allow the timer to count up.   
+      timerReset = false;       // derivative can only equal 0 if robot stops moving. (if it gets completely stuck OR reaches target)
+      Brain.Screen.printAt(10,180,"timerReset = false");
+    }  
+
+    else if(derivative < -1 && derivative > 1)
+    {
+      timerReset = true; //if derivative ever grows again (if robot moves again), set boolean true. timer resets again.
+    }
+//                                       Calculating PID values
+      encoderAvg = (rightE.position(degrees) - (leftE.position(degrees)))/2; // averaging encoder values
+
+      error = target - encoderAvg;     // setting the error as difference between our target and current position.
+      
+      derivative = error - prevError;  // set derivative as rate of change in error, if the robot is very fast,
+      // the difference between current error and error 20 msecs ago will be large. subtract this from motorSpeed to flatten
+      // acceleration curve.
+      prevError = error; // update prevError just after derivative is calculated. this ensures that prevError is always 20 mses
+                         //behind current error.
+      
+      totalError = totalError + error; // set totalError to be continual sum of all errors.
+      motorSpeed = (error*kP) + (totalError*kI) + (derivative*kD);
+      //set motorSpeed to equal the sum of all tuned values (full PID)
+      
+      motorSpeedCap = motorSpeedCap + step; //growing motorSpeedCap by a rate of step/20 msecs. 
+        if(motorSpeedCap > 100)            //motorSpeedCap never can exceed 100.
+          {   motorSpeedCap = 100;}
+
+        if(motorSpeed > motorSpeedCap)      //motorSpeed may not exceed the motorSpeedCap
+          {   motorSpeed = motorSpeedCap;} // if motorSpeed is tiny, then motorSpeed will grow with the Cap
+                                          //  the motorSpeed CAN however, shrink below the Cap as governed by PID.
+        if(totalError > integralCap)
+          {   totalError = integralCap;} //limit totalError from skyrocketing to a uslessly high value.
+
+      driveLB.spin(forward,motorSpeed,pct);
+      driveRB.spin(forward,motorSpeed,pct); // assign motorSpeed to all the drivetrain.
+      driveLF.spin(forward,motorSpeed,pct);
+      driveRF.spin(forward,motorSpeed,pct);
+
+      Brain.Screen.printAt(10,20,"encoderAvg %lf", encoderAvg);
+      Brain.Screen.printAt(10,100,"totalError %lf", totalError); // print all updated values to track code's progress
+      Brain.Screen.printAt(10,120,"derivative %lf",derivative);
+      Brain.Screen.printAt(10,140,"prevError %lf",prevError);
+      Brain.Screen.printAt(10, 160,"error %lf",error);
+      wait(20,msec);
+    
+   }
+
+    driveLB.stop(coast); //loop is finished. timer has exceeded cap. therfore robot is either in steady-state error,
+    driveLF.stop(coast); //or has reached target. stop motors.
+    driveRB.stop(coast);
+    driveRF.stop(coast);
+
+    wait(1000,msec);
+    Brain.Screen.printAt(10,40,"final encoder value %f",encoderAvg);
+    Brain.Screen.setPenColor(blue);
+    Brain.Screen.printAt(10,200,"drive_fwd function Complete");
+   
+}
+///////////////// TURN RIGHT PROPORTIONAL FUNCTION //////////////////////////////////////////////////////////////////////
+
+void drive_tr(int target) //setting target as a parameter to be
+// defined every time function is called
+
+{
+  InertialSensor.setRotation(0,degrees); 
+  wait(100,msec); //inertialSensor resets with every call of the functon
+
+  while(InertialSensor.rotation(degrees) < target) // loop runs until robot has reached target.
+  { Brain.Screen.printAt(50,50,"%f",InertialSensor.rotation(degrees));
+    
+    //setting up error as required travel distance.  
+    turnError = (target-InertialSensor.rotation(degrees));
+    
+    Brain.Screen.printAt( 70,70,"%f",turnError);
+    turnSpeed = (turnError*turnkP); //tune error with kP and assign value to turnSpeed.
+    
+    Brain.Screen.printAt(90,90,"%f",turnSpeed);
+
+      //maximum motorspeed: 40%
+    if(turnSpeed < 3)
+    {turnSpeed = 3;}
+      //mininum motorspeed: 10%
+
+    driveLB.spin(forward,turnSpeed,pct);
+    driveLF.spin(forward,turnSpeed,pct);
+    driveRF.spin(reverse,turnSpeed,pct);
+    driveRB.spin(reverse,turnSpeed,pct);
+    //assign motor speed to constantly updating turnSpeed variable.
+    wait(20,msec);
   }
-  driveLB.stop(brake);
-  driveLF.stop(brake);
-  driveRB.stop(brake);
-  driveRF.stop(brake);
+
+  Brain.Screen.print("Exited while loop");
+  driveLB.stop(coast);
+  driveRB.stop(coast);
+  driveLF.stop(coast);
+  driveRF.stop(coast);
+  wait(200,msec);
+    
+  while(turnError < 0)
+  {   // if and when robot overshoots, run a smaller 
+    // proportional turnin the other direction to correct
+  turnError = (target-InertialSensor.rotation(degrees));
+    
+  turnSpeed = (turnError*turnkP);
+
+  //setting smaller negative min motorspeeds
+  if (turnSpeed > -7)
+  {
+    turnSpeed = -7;
+  } //absolute value of motor speed never dips below 7%
+    // (avoids steadystate error).
+   
+    driveLB.spin(forward,turnSpeed,pct);
+    driveLF.spin(forward,turnSpeed,pct);
+    driveRF.spin(reverse,turnSpeed,pct);
+    driveRB.spin(reverse,turnSpeed,pct);
+ }
+
+  driveLB.stop(coast);
+  driveRB.stop(coast);
+  driveLF.stop(coast);
+  driveRF.stop(coast);
 }
 
-void drive_tl(int target)
+////////////// TURN LEFT PROPORTIONAL FUNCTION ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+
+void drive_tl(int target) //setting target as a parameter to be
+// defined every time function is called
+
 {
-  InertialSensor.setHeading(0,degrees);
-  wait(100,msec);
-  int speed = (target-InertialSensor.rotation(degrees))/3;
-  while(InertialSensor.rotation(degrees) > -target)
-  {
-    driveLB.spin(reverse,speed,pct);
-    driveLF.spin(reverse,speed,pct);
-    driveRF.spin(forward,speed,pct);
-    driveRB.spin(forward,speed,pct);
-    //printf(degrees);
+  InertialSensor.setRotation(0,degrees); 
+  wait(100,msec); //inertialSensor resets with every call of the functon
+
+  while(InertialSensor.rotation(degrees) > target) // loop runs until robot has reached target.
+  { Brain.Screen.printAt(50,50,"Inertial: %f",InertialSensor.rotation(degrees));
+    
+    //setting up error as required travel distance.  
+    turnError = (target-InertialSensor.rotation(degrees));
+    
+    Brain.Screen.printAt(50,70,"%f",turnError);
+    turnSpeed = (turnError*turnkP); //tune error with kP and assign value to turnSpeed.
+    
+    Brain.Screen.printAt(50,90,"%f",turnSpeed);
+
+    if(turnSpeed > -3)
+    {turnSpeed = -3;}
+    
+    driveLB.spin(forward,turnSpeed,pct);
+    driveLF.spin(forward,turnSpeed,pct);
+    driveRF.spin(reverse,turnSpeed,pct);
+    driveRB.spin(reverse,turnSpeed,pct);
+    //assign motor speed to constantly updating turnSpeed variable.
+    wait(20,msec);
   }
-  driveLB.stop(brake);
-  driveLF.stop(brake);
-  driveRB.stop(brake);
-  driveRF.stop(brake);
+
+  Brain.Screen.print("Exited while loop");
+  driveLB.stop(coast);
+  driveRB.stop(coast);
+  driveLF.stop(coast);
+  driveRF.stop(coast);
+  wait(200,msec);
+    
+  while(turnError > 0)
+  {   // if and when robot overshoots, run a smaller 
+    // proportional turning the other direction to correct
+  turnError = (target-InertialSensor.rotation(degrees));
+    
+  turnSpeed = (turnError*turnkP);
+
+  //setting smaller negative min motorspeeds
+  if (turnSpeed < 7)
+  {
+    turnSpeed = 7;
+  } //absolute value of motor speed never dips below 7%
+    // (avoids steadystate error).
+   
+    driveLB.spin(forward,turnSpeed,pct);
+    driveLF.spin(forward,turnSpeed,pct);
+    driveRF.spin(reverse,turnSpeed,pct);
+    driveRB.spin(reverse,turnSpeed,pct);
+ }
+
+  driveLB.stop(coast);
+  driveRB.stop(coast);
+  driveLF.stop(coast);
+  driveRF.stop(coast);
 }
 
 void intake_open()
