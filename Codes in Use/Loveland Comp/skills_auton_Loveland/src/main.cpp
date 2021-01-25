@@ -90,13 +90,16 @@ void drive_fwd(int speed, int dist)
     driveLF.spin(fwd, speed, pct);
     driveRF.spin(fwd, speed, pct);
 
-    //checks to see if the robot has moved
-    if(prevRotationsL == currentRotationsL || prevRotationsR == currentRotationsR)
+    //checks to see if the robot is above the number of ticks it should go
+    if(-leftE.value() <= dist && rightE.value() <= dist)
     {
-
+      driveLB.stop(brake);
+      driveRB.stop(brake);
+      driveLF.stop(brake);
+      driveRF.stop(brake);
     }
-    //makes sure that the robot doesn't go over how far it should go
-    else if(-leftE.value() <= dist && rightE.value() <= dist)
+    //if the robot is stuck it will stop it
+    else if(prevRotationsL == currentRotationsL || prevRotationsR == currentRotationsR)
     {
 
     }
