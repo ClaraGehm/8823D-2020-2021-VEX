@@ -14,6 +14,8 @@ motor driveRB = motor(PORT1, ratio6_1, false);
 inertial Inertial3 = inertial(PORT3);
 motor driveRF = motor(PORT9, ratio6_1, false);
 motor driveLF = motor(PORT2, ratio6_1, false);
+motor rightIntake = motor(PORT19, ratio18_1, true);
+motor leftIntake = motor(PORT12, ratio18_1, false);
 
 // VEXcode generated functions
 
