@@ -9,6 +9,8 @@ extern motor driveRB;
 extern inertial Inertial3;
 extern motor driveRF;
 extern motor driveLF;
+extern motor rightIntake;
+extern motor leftIntake;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
