@@ -16,6 +16,8 @@
 // Inertial3            inertial      3               
 // driveRF              motor         9               
 // driveLF              motor         2               
+// rightIntake          motor         19              
+// leftIntake           motor         12              
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -30,6 +32,7 @@ double error;
 double prevError; 
 int speed;
 double currentDist, dist;
+double totalDist;
 
 void drive_fwd_to_ball()
 {
@@ -40,18 +43,28 @@ void drive_fwd_to_ball()
   kP = 1;  //value will need to be changed to fit our robot
   kD = .5; //value will need to be changed to fit our robot
 
+  totalDist = locator.objectDistance(inches); //sets the total distance that it needs to travel to the current reading of the distance sensor
+
   while (locator.objectDistance(inches) > 1) //the number 1 will need to be changed so that it looks for the distance where the ball enters the system
   {
     prevError = error;                      // setting current error to previous error so we can reset the value of error
-    dist = locator.objectDistance(inches);  //hw far the ball is
+    dist = locator.objectDistance(inches);  //how far the ball is
+    currentDist = totalDist - dist;         //determining how far the robot has traveled
     error = currentDist - dist;             //setting error to equal the distance remaining (negative number)
     derivative = error-prevError;           // derivative is equal to the change in error since the last time the lop was played
 
     speed = error*kP + derivative*kD;  //setting the speed of the robot
 
-    if (speed > 100) //puts a cap on the speed
+    if (speed > 100)                   //puts a cap on the speed
     {
       speed = 100;
+      Brain.Screen.printAt(50, 100, "speed was calculated at over 100");
+    }
+
+    if (currentDist >= (totalDist*.9)) //90% of the way through the robot with turn on the intakes
+    {
+      rightIntake.spin(fwd, 12.0, voltageUnits::volt);
+      leftIntake.spin(fwd, 12.0, voltageUnits::volt);
     }
 
     Brain.Screen.clearScreen();
