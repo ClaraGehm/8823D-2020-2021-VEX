@@ -348,7 +348,7 @@ void autonomous(void)
   // moves forward
   drive_fwd(30, 100);
   flywheel.stop(coast);
-  drive_fwd(30, 1300);
+  drive_fwd(30, 1400);
 
   // moves toward corner goal
   drive_tr(65);
@@ -406,6 +406,7 @@ void autonomous(void)
   wait(300, msec);
   flywheel.stop(hold);
   indexerMotor.stop(coast);
+  intake_open();
 
   wait(300,msec);
   
@@ -433,10 +434,60 @@ void usercontrol(void)
   // User control code here, inside the loop
   while (1) 
   { //This is for the driving motors
-    driveLB.spin(forward,Controller1.Axis3.value(), percent);
-    driveLF.spin(forward,Controller1.Axis3.value(),percent);
-    driveRB.spin(forward,Controller1.Axis2.value(),percent);
-    driveRF.spin(forward,Controller1.Axis2.value(),percent);
+   int leftDrivePct = Controller1.Axis3.value();
+    int rightDrivePct = Controller1.Axis2.value();
+
+    if(leftDrivePct > 100)
+    {leftDrivePct = 100;}
+    if(leftDrivePct < -100)
+    {leftDrivePct = -100;}
+    
+    if(rightDrivePct > 100)
+    {rightDrivePct = 100;}
+    if(rightDrivePct < -100)
+    {rightDrivePct = -100;}
+    
+    const unsigned short DriveArray[101] = 		// Remapping array to motor control values. 
+	  {																					//Set to show 4 ranges. Not ideal for driving.
+		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	
+		  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  
+		  10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+		  15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+		  20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+		  25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
+		  35, 35, 35, 35, 35, 35, 35, 35, 35, 35,
+		  50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+		  70, 70, 70, 70, 70, 70, 70, 70, 70, 70,
+		  100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+		  100
+	  };
+
+    if(leftDrivePct >= 0)
+    {
+      float leftVelocity = DriveArray[abs(leftDrivePct)];
+      driveLF.spin(forward,leftVelocity,pct);
+      driveLB.spin(forward,leftVelocity,pct);
+    }
+    if(leftDrivePct < 0)
+    {
+      float leftVelocity = DriveArray[abs(leftDrivePct)];
+      driveLF.spin(reverse,leftVelocity,pct);
+      driveLB.spin(reverse,leftVelocity,pct);
+    }
+
+    if(rightDrivePct >= 0)
+    {
+      float rightVelocity = DriveArray[abs(rightDrivePct)];
+      driveRF.spin(forward,rightVelocity,pct);
+      driveRB.spin(forward,rightVelocity,pct);
+    }
+    if(rightDrivePct < 0)
+    {
+      float rightVelocity = DriveArray[abs(rightDrivePct)];
+      driveRF.spin(reverse,rightVelocity,pct);
+      driveRB.spin(reverse,rightVelocity,pct);
+    }
+
 
     
     //When L1 is pressed the intake moves forward
@@ -475,17 +526,19 @@ void usercontrol(void)
     //When R1 is pressed indexerMotor moves forward
     if(Controller1.ButtonR1.pressing())
     {
-      indexerMotor.spin(forward, 12.0, voltageUnits::volt);
+      indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+      flywheel.spin(forward,12.0,voltageUnits::volt);
     }
     //When R2 is pressed indexerMotor moves backwards
     else if(Controller1.ButtonR2.pressing())
     {
       indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
-      ballKickout();
+      flywheel.spin(reverse,12.0,voltageUnits::volt);
     }
     else
     {
       indexerMotor.stop(coast);
+      flywheel.stop(coast);
     }
 
     if(Controller1.ButtonDown.pressing())
