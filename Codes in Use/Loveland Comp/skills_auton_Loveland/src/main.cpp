@@ -39,6 +39,10 @@ using namespace vex;
 // A global instance of competition
 competition Competition;
 
+    int Axis3Cap = 0;
+    int NegAxis3Cap = 0;
+    int step = 1;
+
 // define your global instances of motors and other devices here
 double turnkP = .5;     //tuning value for our turnError.
 double turnSpeed = 0; // motor speed, starts at zero.
@@ -716,4 +720,114 @@ int main()
   {
     wait(100, msec);
   }
+  // User control code here, inside the loop
+  while (1) 
+  { //This is for the driving motors
+   // Get the velocity percentage of the left motor. (Axis3 + Axis1)
+   int turnValue = Controller1.Axis1.value();  
+    if  (turnValue < 5 && turnValue > -5)
+    {
+      turnValue = 0;
+    }
+	// Drive Control
+		// Control layout is R/C with dedicated joysticks for moving forward/backward and rotating left/right
+		// The sum of the inputs is the mapped to an array to control motor power
+		
+   
+    int forwardDriveValue = Controller1.Axis3.position(); 
+
+    if(forwardDriveValue > 2 || forwardDriveValue < -2)
+    {   
+    Axis3Cap = Axis3Cap + step;
+    NegAxis3Cap = NegAxis3Cap - step;
+    }
+
+    if(forwardDriveValue >= Axis3Cap)
+    {
+      forwardDriveValue = Axis3Cap;
+      NegAxis3Cap = 0;
+    }
+    
+    if(forwardDriveValue <= NegAxis3Cap)
+    {
+      forwardDriveValue = NegAxis3Cap;
+      Axis3Cap = 0;
+    }
+
+    Brain.Screen.printAt(10,20,"%d",forwardDriveValue);
+    Brain.Screen.printAt(10,40,"%d",Axis3Cap);
+    Brain.Screen.printAt(10,60,"%d",NegAxis3Cap);
+    
+   int leftMotorSpeed = forwardDriveValue + turnValue;
+    // Get the velocity percentage of the right motor. (Axis3 - Axis1)
+   int rightMotorSpeed = forwardDriveValue - turnValue;
+
+    driveLB.spin(forward,leftMotorSpeed,pct); //(Axis3+Axis4)/2;
+    driveLF.spin(forward,leftMotorSpeed,percent);
+    driveRB.spin(forward,rightMotorSpeed,percent);
+    driveRF.spin(forward,rightMotorSpeed,percent);
+
+    
+    //When L1 is pressed the intake moves forward
+    if (Controller1.ButtonL2.pressing())
+    {
+      rightIntake.spin(forward, 12.0, voltageUnits::volt);
+      leftIntake.spin(forward, 12.0, voltageUnits::volt);
+      rightIntake.setStopping(coast);
+      leftIntake.setStopping(coast);
+    }
+      
+    else if(Controller1.ButtonL1.pressing())//|| (Controller1.ButtonL1.pressing() && r == -1)) //movs out 20 degrees 
+    {
+       if (BumperG.pressing() && BumperH.pressing())
+      {
+        //r = -1;
+        rightIntake.stop();
+        leftIntake.stop();
+      }
+      //r = 1;
+      else
+      {
+        rightIntake.spin(reverse, 12.0, voltageUnits::volt);
+        leftIntake.spin(reverse, 12.0, voltageUnits::volt);
+        rightIntake.setStopping(hold);
+        leftIntake.setStopping(hold);
+      }
+     
+    }
+    else //if (!Controller1.ButtonL1.pressing()&&!Controller1.ButtonL2.pressing())
+    {
+      rightIntake.stop();
+      leftIntake.stop();
+    }
+
+    //When R1 is pressed indexerMotor moves forward
+    if(Controller1.ButtonR1.pressing())
+    {
+      indexerMotor.spin(forward, 12.0, voltageUnits::volt);
+    }
+    //When R2 is pressed indexerMotor moves backwards
+    else if(Controller1.ButtonR2.pressing())
+    {
+      indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+      ballKickout();
+    }
+    else
+    {
+      indexerMotor.stop(coast);
+    }
+
+    if(Controller1.ButtonDown.pressing())
+    {
+      flywheel.spin(reverse,12.0,voltageUnits::volt);
+    }
+    
+    else if(Controller1.ButtonLeft.pressing())
+    {
+      flywheel.stop();
+    }
+    wait(20, msec); // Sleep the task for a short amount of time to
+                    // prevent wasted resources.
+  }
+   vex::task::sleep(25);
 }
