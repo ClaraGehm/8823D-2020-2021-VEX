@@ -8,14 +8,15 @@ using code = vision::code;
 brain  Brain;
 
 // VEXcode device constructors
-motor driveLB = motor(PORT15, ratio18_1, true);
+motor driveLB = motor(PORT15, ratio6_1, true);
 distance locator = distance(PORT4);
 motor driveRB = motor(PORT1, ratio6_1, false);
 inertial Inertial3 = inertial(PORT3);
 motor driveRF = motor(PORT9, ratio6_1, false);
-motor driveLF = motor(PORT2, ratio6_1, false);
+motor driveLF = motor(PORT2, ratio6_1, true);
 motor rightIntake = motor(PORT19, ratio18_1, true);
 motor leftIntake = motor(PORT12, ratio18_1, false);
+motor indexerMotor = motor(PORT11, ratio6_1, false);
 
 // VEXcode generated functions
 
