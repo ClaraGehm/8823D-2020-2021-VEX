@@ -11,6 +11,7 @@ extern motor driveRF;
 extern motor driveLF;
 extern motor rightIntake;
 extern motor leftIntake;
+extern motor indexerMotor;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
