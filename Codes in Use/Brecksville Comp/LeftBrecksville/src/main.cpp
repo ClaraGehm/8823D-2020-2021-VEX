@@ -379,7 +379,7 @@ void autonomous(void)
   //waits for the ball to leave the flywheel and turns it off
   wait(300, msec);
   flywheel.stop(hold);
-  
+  indexerMotor.spin(forward, 6.0, voltageUnits::volt);
   /*
   //makes the intakes spin in reverse so that we don't take any of our color ball with us 
   leftIntake.spin(reverse);
@@ -409,13 +409,67 @@ void autonomous(void)
 
 void usercontrol(void) 
 {
+  driveLB.setStopping(coast);
+  driveLF.setStopping(coast);
+  driveRB.setStopping(coast);
+  driveRF.setStopping(coast);
   // User control code here, inside the loop
   while (1) 
   { //This is for the driving motors
-    driveLB.spin(forward,Controller1.Axis3.value(), percent);
-    driveLF.spin(forward,Controller1.Axis3.value(),percent);
-    driveRB.spin(forward,Controller1.Axis2.value(),percent);
-    driveRF.spin(forward,Controller1.Axis2.value(),percent);
+    int leftDrivePct = Controller1.Axis3.value();
+    int rightDrivePct = Controller1.Axis2.value();
+
+    if(leftDrivePct > 100)
+    {leftDrivePct = 100;}
+    if(leftDrivePct < -100)
+    {leftDrivePct = -100;}
+    
+    if(rightDrivePct > 100)
+    {rightDrivePct = 100;}
+    if(rightDrivePct < -100)
+    {rightDrivePct = -100;}
+    
+    const unsigned short DriveArray[101] = 		// Remapping array to motor control values. 
+	  {																					//Set to show 4 ranges. Not ideal for driving.
+		  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,	
+		  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  
+		  10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+		  15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+		  20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+		  25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
+		  35, 35, 35, 35, 35, 35, 35, 35, 35, 35,
+		  50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+		  70, 70, 70, 70, 70, 70, 70, 70, 70, 70,
+		  100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+		  100
+	  };
+
+    if(leftDrivePct >= 0)
+    {
+      float leftVelocity = DriveArray[abs(leftDrivePct)];
+      driveLF.spin(forward,leftVelocity,pct);
+      driveLB.spin(forward,leftVelocity,pct);
+    }
+    if(leftDrivePct < 0)
+    {
+      float leftVelocity = DriveArray[abs(leftDrivePct)];
+      driveLF.spin(reverse,leftVelocity,pct);
+      driveLB.spin(reverse,leftVelocity,pct);
+    }
+
+    if(rightDrivePct >= 0)
+    {
+      float rightVelocity = DriveArray[abs(rightDrivePct)];
+      driveRF.spin(forward,rightVelocity,pct);
+      driveRB.spin(forward,rightVelocity,pct);
+    }
+    if(rightDrivePct < 0)
+    {
+      float rightVelocity = DriveArray[abs(rightDrivePct)];
+      driveRF.spin(reverse,rightVelocity,pct);
+      driveRB.spin(reverse,rightVelocity,pct);
+    }
+
 
     
     //When L1 is pressed the intake moves forward
