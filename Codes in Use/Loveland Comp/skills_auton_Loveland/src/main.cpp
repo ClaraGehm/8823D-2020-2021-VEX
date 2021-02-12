@@ -74,19 +74,23 @@ void pre_auton(void)
 int kill = 1;
 
 //forward speed, distance
+int firstLoop = 0;
 
 void drive_fwd(int speed, int dist)
 {
+  Brain.Timer.reset();
   leftE.setPosition(0, deg);
   rightE.setPosition(0, deg);
   Brain.Screen.setPenColor(white);
   while (Brain.Timer.value() < 0.3)
   {
+    Brain.Screen.printAt(50, 200, "entered loop");
     //reseting the values so that they are updates
     prevRotationsL = currentRotationsL;
-    currentRotationsL = leftE.value();
+    currentRotationsL = -leftE.value();
     prevRotationsR = currentRotationsR;
     currentRotationsR = rightE.value();
+    
     
     //telling the motors to move
     driveLB.spin(fwd, speed, pct);
@@ -95,25 +99,27 @@ void drive_fwd(int speed, int dist)
     driveRF.spin(fwd, speed, pct);
 
     //checks to see if the robot is above the number of ticks it should go
-    if(-leftE.value() <= dist && rightE.value() <= dist)
+    if(-leftE.value() >= dist && rightE.value() >= dist)
     {
       driveLB.stop(brake);
       driveRB.stop(brake);
       driveLF.stop(brake);
       driveRF.stop(brake);
+      //Brain.Screen.printAt(50, 150, "Not supposed to be here");
     }
     //if the robot is stuck it will stop it
-    else if(prevRotationsL == currentRotationsL || prevRotationsR == currentRotationsR)
+    else if((prevRotationsL == currentRotationsL || prevRotationsR == currentRotationsR) && firstLoop == 1)
     {
-
+      Brain.Screen.printAt(50, 150, "Ran into goal");
     }
     //if neither of those things are true it resets the Brain Timer 
     else
     {
       Brain.Timer.reset();
     }
-    
+    firstLoop = 1;
     wait(20, msec);
+    
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(50, 50, "heading %5.2d", rightE.value());
     Brain.Screen.printAt(50, 100, "heading %5.2d", leftE.value());
@@ -122,6 +128,7 @@ void drive_fwd(int speed, int dist)
   driveRB.stop(brake);
   driveLF.stop(brake);
   driveRF.stop(brake);
+  Brain.Screen.printAt(50, 150, "done:");
 }
   
 
@@ -149,6 +156,7 @@ void drive_bwd(int speed, int dist)
   driveRB.stop(brake);
   driveLF.stop(brake);
   driveRF.stop(brake);
+  Brain.Screen.printAt(50, 0, "done");
   
 }
 ///////////////// TURN RIGHT PROPORTIONAL FUNCTION //////////////////////////////////////////////////////////////////////
@@ -283,14 +291,12 @@ void drive_tl(int target) //setting target as a parameter to be
 
 void intake_open()
 {
-  while(!BumperG.pressing() && !BumperH.pressing())
-  {
   leftIntake.setVelocity(-95,pct);
   rightIntake.setVelocity(-100,pct);
   leftIntake.spin(fwd);
   rightIntake.spin(fwd);
-  Brain.Screen.print(BumperG.value());
-  }
+  wait(300, msec);
+  
   leftIntake.stop(hold);
   rightIntake.stop(hold);
 }
@@ -406,9 +412,9 @@ void autonomous(void)
   //moves toward corner goal
   InertialSensor.setHeading(0, degrees);
   Brain.Screen.printAt(100, 100, "Sensor Value: %f", InertialSensor.value());
-  drive_fwd(40,600); //value between intaking first ball and turning before goal
-  drive_tl(-65);
-  drive_fwd(40,630);
+  drive_fwd(30,550); //value between intaking first ball and turning before goal
+  drive_tl(-68);
+  drive_fwd(30,700);
   flywheel.spin(reverse, 12.0, voltageUnits::volt);
   indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
   leftIntake.stop(); 
@@ -421,17 +427,18 @@ void autonomous(void)
   //waits a second so we know it has deffinitly left the system 
   wait(.2, seconds); 
   flywheel.stop();
+  //intake_open();
 
   /////////////////////////////////////////////////
   //    THIRD GOAL
   /////////////////////////////////////////////////
  
   //backs away from the goal, opens intakes, turns, and heads towards the ball in front of the third goal
-  drive_bwd(40,1800);
+  drive_bwd(30,1000);
   intake_open();
-  drive_tr(89);
-  intake_open();
-  drive_fwd(40, 1450);
+  drive_bwd(30, 800);
+  drive_tr(93);
+  drive_fwd(30, 1000);
   
   //starts intaking the ball and keeps going until it is in the system (triggered by ballDetect), then turns everything off
   leftIntake.spin(fwd,12.0,voltageUnits::volt);
@@ -444,11 +451,13 @@ void autonomous(void)
   indexerMotor.stop();
   leftIntake.stop();
   rightIntake.stop();
+  drive_fwd(30, 100);
 
   //turns towards the third goal and approaches it.
-  drive_tl(-45);
+  drive_tl(-43);
   intake_open();
-  drive_fwd(25,300);
+  drive_fwd(25,350);
+  /*
   driveLB.spin(forward, 6.0, voltageUnits::volt);
   driveLF.spin(forward, 6.0, voltageUnits::volt);
   driveRB.spin(forward, 6.0, voltageUnits::volt);
@@ -457,7 +466,7 @@ void autonomous(void)
   driveLB.stop();
   driveLF.stop();
   driveRB.stop();
-  driveRF.stop();
+  driveRF.stop();*/
 
   //runs the indexer and flywheel until the ball leaves the system 
   while(!BallExit.pressing())
@@ -477,15 +486,17 @@ void autonomous(void)
   //backs away from the goal and starts heading towards the ball for the first goal
   drive_bwd(30,715);
   wait(500, msec);
-  drive_tr(89);
-  intake_open();
-  drive_fwd(40,1600);
+  drive_tr(88);
+  //intake_open();
+  drive_fwd(40,1450);
+  rightIntake.spin(fwd, 12.0, voltageUnits::volt);
+  leftIntake.spin(fwd, 12.0, voltageUnits::volt);
+  drive_fwd(30, 150);
 
   //intakes ball for fourth goal
   while(BallDetect.value() == 0)
   {
-    rightIntake.spin(fwd, 12.0, voltageUnits::volt);
-    leftIntake.spin(fwd, 12.0, voltageUnits::volt);
+    
     indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
   }
   wait(200, msec);
@@ -495,9 +506,10 @@ void autonomous(void)
 
 
   //turns and heads towards the fourth goal
-  drive_tl(-50);
+  drive_tl(-53);
   //intake_open();
-  drive_fwd(40,1000); 
+  drive_fwd(40,1100); 
+  /*
   driveLB.spin(fwd, 30, percent);
   driveLF.spin(forward, 30, percent);
   driveRB.spin(forward, 30, percent);
@@ -506,7 +518,7 @@ void autonomous(void)
   driveLB.stop();
   driveLF.stop();
   driveRB.stop();
-  driveRF.stop();
+  driveRF.stop();*/
 
   //luanch ball into goal
   while(!BallExit.pressing())
@@ -526,23 +538,34 @@ void autonomous(void)
   drive_bwd(30, 590);
   drive_tr(136);
   //drive_bwd(30, 810);
+  driveLB.setStopping(hold);
+  driveLF.setStopping(hold);
+  driveRB.setStopping(hold);
+  driveRF.setStopping(hold);
   driveLB.spin(reverse, 6.0, voltageUnits::volt);
   driveLF.spin(reverse, 6.0, voltageUnits::volt);
   driveRB.spin(reverse, 6.0, voltageUnits::volt);
   driveRF.spin(reverse, 6.0, voltageUnits::volt);
-  wait(1000, msec);
+  wait(1200, msec);
   driveLB.stop(coast);
   driveLF.stop(coast);
   driveRB.stop(coast);
   driveRF.stop(coast); 
   wait(200, msec);
 
+  driveLB.setStopping(coast);
+  driveLF.setStopping(coast);
+  driveRB.setStopping(coast);
+  driveRF.setStopping(coast);
+
   //drives forward to the next ball
   drive_fwd(30, 1600);
   intake_open();//remove when full code is running
   drive_tr(43);
-  drive_fwd(30, 1100);
-  
+  drive_fwd(30, 1000);
+  rightIntake.spin(fwd, 12.0, voltageUnits::volt);
+  leftIntake.spin(fwd, 12.0, voltageUnits::volt);
+  drive_fwd(25, 100);
 
   //pick up ball
   while(BallDetect.value() == 0)
@@ -557,9 +580,10 @@ void autonomous(void)
   indexerMotor.stop(coast);
 
   //turns and moves towards goal
-  drive_fwd(30, 220);
+  drive_fwd(30, 120);
   drive_tl(-131);
-  drive_fwd(30, 1180);
+  drive_fwd(30, 1420);   
+  /*
   driveLB.spin(fwd, 30, percent);
   driveLF.spin(forward, 30, percent);
   driveRB.spin(forward, 30, percent);
@@ -568,7 +592,7 @@ void autonomous(void)
   driveLB.stop();
   driveLF.stop();
   driveRB.stop();
-  driveRF.stop();
+  driveRF.stop();*/
 
   //luanch ball into goal
   while(!BallExit.pressing())
@@ -585,10 +609,10 @@ void autonomous(void)
   //////////////////////////////////////
 
   //backup and move towards the ball
-  drive_bwd(30, 600);
+  drive_bwd(30, 700);
   drive_tr(70);
   intake_open();
-  drive_fwd(30, 1200);
+  drive_fwd(30, 1200);       ////////////////////////THIS VALUE WAS CHNAGED AND NOT TESTED (ORIGINAL VALUE WAS 1100)
 
   //pick up ball
   while(BallDetect.value() == 0)
@@ -603,9 +627,9 @@ void autonomous(void)
   indexerMotor.stop(coast);
 
   //drives towards goal
-  drive_fwd(30, 1000);
-  drive_tl(-25);
-  drive_fwd(20, 150);
+  drive_fwd(30, 850);  ///////WAS 1150 changed it for league 
+  drive_tl(-15);
+  drive_fwd(20, 400);
 
   //luanch ball into goal
   while(!BallExit.pressing())
@@ -616,6 +640,7 @@ void autonomous(void)
   wait(500, msec);
   flywheel.stop(coast); 
   indexerMotor.stop(coast);
+  drive_bwd(30, 300);
   
 }
 

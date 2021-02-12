@@ -379,7 +379,7 @@ void autonomous(void)
   //waits for the ball to leave the flywheel and turns it off
   wait(300, msec);
   flywheel.stop(hold);
-  indexerMotor.spin(forward, 6.0, voltageUnits::volt);
+  
   /*
   //makes the intakes spin in reverse so that we don't take any of our color ball with us 
   leftIntake.spin(reverse);
@@ -409,14 +409,10 @@ void autonomous(void)
 
 void usercontrol(void) 
 {
-  driveLB.setStopping(coast);
-  driveLF.setStopping(coast);
-  driveRB.setStopping(coast);
-  driveRF.setStopping(coast);
   // User control code here, inside the loop
   while (1) 
   { //This is for the driving motors
-    int leftDrivePct = Controller1.Axis3.value();
+   int leftDrivePct = Controller1.Axis3.value();
     int rightDrivePct = Controller1.Axis2.value();
 
     if(leftDrivePct > 100)
