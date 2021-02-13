@@ -278,58 +278,50 @@ void intake_close(float stay)
   rightIntake.stop(coast);
 }
 
-void ballKickout()
-{
+void ballKickout() {
   OpticalSensor.setLightPower(25, percent);
-  
-  if(DistanceSensor.objectDistance(inches) < .5)
- {
-    if (OpticalSensor.hue() < 16)
+
+  if (DistanceSensor.objectDistance(inches) < 0.5) {
+    if (OpticalSensor.hue() >= 225 &&
+        OpticalSensor.hue() <= 245) // look for blue
     {
-        Brain.Screen.setPenColor(red);
-        Brain.Screen.printAt(200,100,"Red Ball Found");
-     
-      if(!BallExit.pressing())
-      {
+      flywheel.spin(forward, 12.0, voltageUnits::volt);
+      Brain.Screen.setPenColor(red); // kickout red
+      Brain.Screen.printAt(200, 160, "Red was not The Imposter");
+      wait(0.18, seconds);
+      flywheel.stop();
+    }
+
+    else if (OpticalSensor.hue() < 16) // if red detected
+    {
+      Brain.Screen.setPenColor(blue); // print blue found
+      Brain.Screen.printAt(200, 100, "Blue Ball Found");
+
+      if (!BallExit.pressing()) {
         flywheel.spin(reverse, 12.0, voltageUnits::volt);
       }
-    
-      else if(BallExit.pressing())
-      {
-        wait(100,msec);
-        flywheel.stop();
-        Brain.Screen.setPenColor(red); 
-        Brain.Screen.printAt(200,130,"Red Ball Fired");
 
-        Controller1.Screen.clearLine(160); 
-      } 
-    }    
-      
-  
-      else if (OpticalSensor.hue()>=225 && OpticalSensor.hue()<=245)
-      {
-        flywheel.spin(forward, 12.0, voltageUnits::volt);
-        Brain.Screen.setPenColor(blue);
-        Brain.Screen.printAt(200,160, "Blue was not The Imposter");
-        wait(0.18,seconds);
+      else if (BallExit.pressing()) {
+        wait(100, msec);
         flywheel.stop();
+        Brain.Screen.setPenColor(blue); // print blue fired
+        Brain.Screen.printAt(200, 130, "Blue Ball Fired");
 
+        Controller1.Screen.clearLine(160);
       }
-  }
-      else if(DistanceSensor.objectDistance(inches) >= .5)
-      {
-        if(BallExit.pressing())
-        { 
-          wait(100,msec);
-          flywheel.stop();
-          Brain.Screen.setPenColor(red); 
-          Brain.Screen.printAt(200,130,"Red Ball Fired");
+      
+    }
+  } else if (DistanceSensor.objectDistance(inches) >= .5) {
+    if (BallExit.pressing()) {
+      wait(100, msec);
+      flywheel.stop();
+      Brain.Screen.setPenColor(blue); // blue fired
+      Brain.Screen.printAt(200, 130, "Blue Ball Fired");
 
-          Controller1.Screen.clearLine(160); 
-     
-        }
-      } 
-          wait(10,msec);
+      Controller1.Screen.clearLine(160);
+    }
+  }
+  wait(10, msec);
 }
  
 
