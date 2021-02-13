@@ -420,7 +420,7 @@ void autonomous(void)
   Brain.Screen.printAt(100, 100, "Sensor Value: %f", InertialSensor.value());
   drive_fwd(40,600); //value between intaking first ball and turning before goal
   drive_tl(-65);
-  drive_fwd(40,630);
+  drive_fwd(40,735);
   flywheel.spin(reverse, 12.0, voltageUnits::volt);
   indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
   leftIntake.stop(); 
@@ -439,11 +439,11 @@ void autonomous(void)
   /////////////////////////////////////////////////
  
   //backs away from the goal, opens intakes, turns, and heads towards the ball in front of the third goal
-  drive_bwd(40,1800);
+  drive_bwd(40,1700);
   intake_open();
   drive_tr(89);
   intake_open();
-  drive_fwd(40, 1450);
+  drive_fwd(40, 1350);
   
   //starts intaking the ball and keeps going until it is in the system (triggered by ballDetect), then turns everything off
   leftIntake.spin(fwd,12.0,voltageUnits::volt);
@@ -487,7 +487,7 @@ void autonomous(void)
   //////////////////////////////////////////////////////////////////////
 
   //backs away from the goal and starts heading towards the ball for the first goal
-  drive_bwd(30,715);
+  drive_bwd(30,610);
   wait(500, msec);
   drive_tr(89);
   intake_open();
@@ -571,7 +571,7 @@ void autonomous(void)
   //turns and moves towards goal
   drive_fwd(30, 220);
   drive_tl(-131);
-  drive_fwd(30, 1180);
+  drive_fwd(30, 1280);
   driveLB.spin(fwd, 30, percent);
   driveLF.spin(forward, 30, percent);
   driveRB.spin(forward, 30, percent);
@@ -616,8 +616,18 @@ void autonomous(void)
 
   //drives towards goal
   drive_fwd(30, 1000);
-  drive_tl(-25);
+  drive_tl(-15);
   drive_fwd(20, 150);
+
+  driveLB.spin(fwd, 30, percent);
+  driveLF.spin(forward, 30, percent);
+  driveRB.spin(forward, 30, percent);
+  driveRF.spin(forward, 30, percent);
+  wait(200, msec);
+  driveLB.stop();
+  driveLF.stop();
+  driveRB.stop();
+  driveRF.stop();
 
   //luanch ball into goal
   while(!BallExit.pressing())
