@@ -1,27 +1,3 @@
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// InertialSensor       inertial      3               
-// leftE                encoder       E, F            
-// rightE               encoder       A, B            
-// eyes                 vision        16              
-// BallDetect           limit         C               
-// BallExit             limit         D               
-// Controller1          controller                    
-// driveLB              motor         15              
-// leftIntake           motor         12              
-// rightIntake          motor         19              
-// indexerMotor         motor         11              
-// flywheel             motor         20              
-// driveRB              motor         1               
-// driveRF              motor         9               
-// driveLF              motor         2               
-// OpticalSensor        optical       7               
-// DistanceSensor       distance      6               
-// BumperG              limit         G               
-// BumperH              limit         H               
-// locator              distance      4               
-// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -69,6 +45,7 @@ competition Competition;
     int step = 1;
     double kP;
 //------Proportional Values
+double kPdistance;
 double kD, derivative;
 double target;
 double error;
@@ -76,6 +53,14 @@ double prevError;
 int speed;
 double currentDist, dist;
 double totalDist;
+double speedCap = 60;
+const unsigned short rampUpArray []
+{
+  20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 
+  30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+  40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40
+};
+int i =0;
 
 // define your global instances of motors and other devices here
 double turnkP = .5;     //tuning value for our turnError.
@@ -107,58 +92,93 @@ void pre_auton(void)
 }
 int kill = 1;
 
-//forward speed, distance
+//intake open function
+void intake_open(double sleepTime)
+{
+  leftIntake.setVelocity(-95,pct);
+  rightIntake.setVelocity(-100,pct);
+  leftIntake.spin(fwd);
+  rightIntake.spin(fwd);
+  wait(sleepTime, sec);
+  leftIntake.stop(hold);
+  rightIntake.stop(hold);
+}
 
 //DRIVE FORWARD TO BALL FUNCTION
 void drive_fwd_to_ball()
 {
+  intake_open(0.3); 
+  printf("intakes opened");
+  wait(1, sec);
+
   char buffer[100]; // need a temp space to store data which will be written to the sd card creates an array (list) 100 characters long
 
   int name = sprintf(buffer, "Distance, Spd Variable, Motor Speed \n");             // insted of printing to a terminal, we are printing a string to a variable
-  Brain.SDcard.savefile("Distance Sensor Pcontrol.csv", (uint8_t *)buffer, name);   // savefile needs: name, buffer, length uint8_t  unsigned integer of 8 bits(1 byte)
-  kP = .9;  //value will need to be changed to fit our robot
-  //kD = .5; //value will need to be changed to fit our robot
+  Brain.SDcard.savefile("distanceWithPDvalues.csv", (uint8_t *)buffer, name);   // savefile needs: name, buffer, length uint8_t  unsigned integer of 8 bits(1 byte)
+  kPdistance = .9;  //value will need to be changed to fit our robot    .3
+  kD = 0; //value will need to be changed to fit our robot
 
   totalDist = locator.objectDistance(inches); //sets the total distance that it needs to travel to the current reading of the distance sensor
 
-  while (locator.objectDistance(inches) > 1) //the number 1 will need to be changed so that it looks for the distance where the ball enters the system
+  while (locator.objectDistance(inches) > 5) //the number 1 will need to be changed so that it looks for the distance where the ball enters the system
   {
-    prevError = error;                      // setting current error to previous error so we can reset the value of error
+    i++;
+    //printf("%2f", locator.objectDistance(inches), "\n");
     dist = locator.objectDistance(inches);  //how far the ball is
     currentDist = totalDist - dist;         //determining how far the robot has traveled
     error = currentDist - dist;             //setting error to equal the distance remaining (negative number)
     derivative = error-prevError;           // derivative is equal to the change in error since the last time the lop was played
 
-    speed = error*kP; // + derivative*kD;  //setting the speed of the robot
+    speed = -(error*kPdistance) + 30; //(-(derivative*kD));  //setting the speed of the robot
+    
 
-    if (speed > 100)                   //puts a cap on the speed
+    if(currentDist < locator.objectDistance(inches)*.2)
     {
-      speed = 100;
-      Brain.Screen.printAt(50, 100, "speed was calculated at over 100");
+      speed = rampUpArray[i];
+      Brain.Screen.printAt(50, 150, "In ramp up array");
+      printf("in ramp up array\n");
     }
 
-    if (currentDist >= (totalDist*.9)) //90% of the way through the robot with turn on the intakes
+    if (speed > speedCap)                   //puts a cap on the speed
+    {
+      speed = speedCap;
+      Brain.Screen.printAt(50, 100, "speed was calculated at over 100");
+    }
+    else if (speed < 20 && locator.objectDistance(inches)*.2 > currentDist)
+    {
+      speed = 20;
+    }
+
+    if (locator.objectDistance(inches) < 12) // of the way through the robot with turn on the intakes
     {
       rightIntake.spin(fwd, 12.0, voltageUnits::volt);
       leftIntake.spin(fwd, 12.0, voltageUnits::volt);
+      indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+      //printf("intakes run");
     }
 
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(50, 50, "%d", speed); //printing the speed to the brain screen so we know what is the current speed of the robot
+    printf("%d\n", speed);
+    //printf("%f\n", locator.objectDistance(inches));
+
+    //prevError = error;                      // setting current error to previous error so we can reset the value of error
 
     //making all of the motors move at the desired speed
-    driveLB.setVelocity(speed, rpm);
-    driveRB.setVelocity(speed, rpm);
-    driveRF.setVelocity(speed, rpm);
-    driveLF.setVelocity(speed, rpm);
+    driveLB.setVelocity(speed, percent);
+    driveRB.setVelocity(speed, percent);
+    driveRF.setVelocity(speed, percent);
+    driveLF.setVelocity(speed, percent);
     driveLB.spin(forward);
     driveRB.spin(forward);
     driveRF.spin(forward);
     driveLF.spin(forward);
 
     //puts the distance, speed,a nd velocity of one of the motors on the sd card so we can examine the data
-    int pos = sprintf(buffer, "%f, %d, %f, \n", locator.objectDistance(inches), speed, driveLB.velocity(rpm));  // sprintf takes a string and stores it as an integer
-    Brain.SDcard.appendfile("Distance Sensor Pcontrol.csv", (uint8_t *)buffer, pos);
+    int pos = sprintf(buffer, "%f, %d, %f, \n", locator.objectDistance(inches), speed, driveLB.velocity(percent));  // sprintf takes a string and stores it as an integer
+    Brain.SDcard.appendfile("distanceWithPDvalue.csv", (uint8_t *)buffer, pos);
+    printf("%d\n", speed);
+    printf("%f\n", currentDist);
 
     //wait 20 msec so that we do not use up all of the cpu on the brain
     wait(20, msec);
@@ -168,6 +188,10 @@ void drive_fwd_to_ball()
   driveRB.stop();
   driveRF.stop();
   driveLF.stop();
+  indexerMotor.stop();
+  rightIntake.stop(coast);
+  leftIntake.stop(coast);
+  printf("jumped out of loop\n");
 }
 
 //DRIVE FORWARD NORMAL FUNCTION
@@ -176,43 +200,17 @@ void drive_fwd(int speed, int dist)
   leftE.setPosition(0, deg);
   rightE.setPosition(0, deg);
   Brain.Screen.setPenColor(white);
-  while (Brain.Timer.value() < 0.3)
+  while (-leftE.value() <= dist && rightE.value() <= dist)
   {
-    //reseting the values so that they are updates
-    prevRotationsL = currentRotationsL;
-    currentRotationsL = leftE.value();
-    prevRotationsR = currentRotationsR;
-    currentRotationsR = rightE.value();
-    
-    //telling the motors to move
     driveLB.spin(fwd, speed, pct);
     driveRB.spin(fwd, speed, pct);
     driveLF.spin(fwd, speed, pct);
     driveRF.spin(fwd, speed, pct);
-
-    //checks to see if the robot is above the number of ticks it should go
-    if(-leftE.value() <= dist && rightE.value() <= dist)
-    {
-      driveLB.stop(brake);
-      driveRB.stop(brake);
-      driveLF.stop(brake);
-      driveRF.stop(brake);
-    }
-    //if the robot is stuck it will stop it
-    else if(prevRotationsL == currentRotationsL || prevRotationsR == currentRotationsR)
-    {
-
-    }
-    //if neither of those things are true it resets the Brain Timer 
-    else
-    {
-      Brain.Timer.reset();
-    }
     
     wait(20, msec);
     Brain.Screen.clearScreen();
-    Brain.Screen.printAt(50, 50, "heading %5.2d", rightE.value());
-    Brain.Screen.printAt(50, 100, "heading %5.2d", leftE.value());
+    Brain.Screen.printAt(50, 50, "rotation %5.2d", rightE.value());
+    Brain.Screen.printAt(50, 100, "rotation %5.2d", leftE.value());
   }
   driveLB.stop(brake);
   driveRB.stop(brake);
@@ -377,19 +375,6 @@ void drive_tl(int target) //setting target as a parameter to be
   driveRF.stop(coast);
 }
 
-void intake_open()
-{
-  while(!BumperG.pressing() && !BumperH.pressing())
-  {
-  leftIntake.setVelocity(-95,pct);
-  rightIntake.setVelocity(-100,pct);
-  leftIntake.spin(fwd);
-  rightIntake.spin(fwd);
-  Brain.Screen.print(BumperG.value());
-  }
-  leftIntake.stop(hold);
-  rightIntake.stop(hold);
-}
 
 void intake_close(float stay)
 {
@@ -483,28 +468,21 @@ void autonomous(void)
   //    SECOND GOAL
   //////////////////////////////////////////////
 
-  intake_open();
+  intake_open(.3);
 
   //moves forward away from the goal
-  drive_fwd(40,850);
+  drive_fwd(40,550);
   flywheel.stop(coast);
-  //opens the intake to intake first ball 
-  leftIntake.spin(forward, 12.0, voltageUnits::volt);
-  rightIntake.spin(forward, 12.0, voltageUnits::volt);
-  indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
-  //drive_fwd(40,100);
-
-
-  //waits a second so the ball can go in
-  wait(.35, sec);
-  indexerMotor.stop(coast); 
+  //heads towards to pick up ball
+  drive_fwd_to_ball();
+  drive_fwd(40, 100);
 
   //moves toward corner goal
   InertialSensor.setHeading(0, degrees);
   Brain.Screen.printAt(100, 100, "Sensor Value: %f", InertialSensor.value());
   drive_fwd(40,600); //value between intaking first ball and turning before goal
-  drive_tl(-65);
-  drive_fwd(40,630);
+  drive_tl(-80);
+  drive_fwd(40,700);
   flywheel.spin(reverse, 12.0, voltageUnits::volt);
   indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
   leftIntake.stop(); 
@@ -524,9 +502,9 @@ void autonomous(void)
  
   //backs away from the goal, opens intakes, turns, and heads towards the ball in front of the third goal
   drive_bwd(40,1800);
-  intake_open();
+  intake_open(.3);
   drive_tr(89);
-  intake_open();
+  intake_open(.3);
   drive_fwd(40, 1450);
   
   //starts intaking the ball and keeps going until it is in the system (triggered by ballDetect), then turns everything off
@@ -543,7 +521,7 @@ void autonomous(void)
 
   //turns towards the third goal and approaches it.
   drive_tl(-45);
-  intake_open();
+  intake_open(.3);
   drive_fwd(25,300);
   driveLB.spin(forward, 6.0, voltageUnits::volt);
   driveLF.spin(forward, 6.0, voltageUnits::volt);
@@ -574,7 +552,7 @@ void autonomous(void)
   drive_bwd(30,715);
   wait(500, msec);
   drive_tr(89);
-  intake_open();
+  intake_open(.3);
   drive_fwd(40,1600);
 
   //intakes ball for fourth goal
@@ -635,7 +613,7 @@ void autonomous(void)
 
   //drives forward to the next ball
   drive_fwd(30, 1600);
-  intake_open();//remove when full code is running
+  intake_open(.3);//remove when full code is running
   drive_tr(43);
   drive_fwd(30, 1100);
   
@@ -683,7 +661,7 @@ void autonomous(void)
   //backup and move towards the ball
   drive_bwd(30, 600);
   drive_tr(70);
-  intake_open();
+  intake_open(.3);
   drive_fwd(30, 1200);
 
   //pick up ball
