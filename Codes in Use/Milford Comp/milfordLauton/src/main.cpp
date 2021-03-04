@@ -40,7 +40,7 @@ competition Competition;
 
 int Axis3Cap = 0;
 int NegAxis3Cap = 0;
-int step = 1;
+int step = 2;
 
 // define your global instances of motors and other devices here
 double turnkP = .5;   // tuning value for our turnError.
@@ -469,13 +469,15 @@ void usercontrol(void) {
     // When R1 is pressed indexerMotor moves forward
     if (Controller1.ButtonR1.pressing()) {
       indexerMotor.spin(forward, 12.0, voltageUnits::volt);
+      flywheel.spin(forward, 12.0, voltageUnits::volt);
     }
     // When R2 is pressed indexerMotor moves backwards
     else if (Controller1.ButtonR2.pressing()) {
       indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
-      ballKickout();
+      flywheel.spin(reverse, 12.0, voltageUnits::volt);
     } else {
       indexerMotor.stop(coast);
+      flywheel.stop(coast);
     }
 
     if (Controller1.ButtonDown.pressing()) {
