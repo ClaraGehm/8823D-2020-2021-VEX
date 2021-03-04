@@ -653,76 +653,7 @@ void autonomous(void)
 
 void usercontrol(void) 
 {
-  // User control code here, inside the loop
-  while (1) 
-  { //This is for the driving motors
-    driveLB.spin(forward,Controller1.Axis3.value(), percent);
-    driveLF.spin(forward,Controller1.Axis3.value(),percent);
-    driveRB.spin(forward,Controller1.Axis2.value(),percent);
-    driveRF.spin(forward,Controller1.Axis2.value(),percent);
-
-    
-    //When L1 is pressed the intake moves forward
-    if (Controller1.ButtonL2.pressing())
-    {
-      rightIntake.spin(forward, 12.0, voltageUnits::volt);
-      leftIntake.spin(forward, 12.0, voltageUnits::volt);
-      rightIntake.setStopping(coast);
-      leftIntake.setStopping(coast);
-    }
-      
-    else if(Controller1.ButtonL1.pressing())//|| (Controller1.ButtonL1.pressing() && r == -1)) //movs out 20 degrees 
-    {
-       if (BumperG.pressing() && BumperH.pressing())
-      {
-        //r = -1;
-        rightIntake.stop();
-        leftIntake.stop();
-      }
-      //r = 1;
-      else
-      {
-        rightIntake.spin(reverse, 12.0, voltageUnits::volt);
-        leftIntake.spin(reverse, 12.0, voltageUnits::volt);
-        rightIntake.setStopping(hold);
-        leftIntake.setStopping(hold);
-      }
-     
-    }
-    else //if (!Controller1.ButtonL1.pressing()&&!Controller1.ButtonL2.pressing())
-    {
-      rightIntake.stop();
-      leftIntake.stop();
-    }
-
-    //When R1 is pressed indexerMotor moves forward
-    if(Controller1.ButtonR1.pressing())
-    {
-      indexerMotor.spin(forward, 12.0, voltageUnits::volt);
-    }
-    //When R2 is pressed indexerMotor moves backwards
-    else if(Controller1.ButtonR2.pressing())
-    {
-      indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
-      ballKickout();
-    }
-    else
-    {
-      indexerMotor.stop(coast);
-    }
-
-    if(Controller1.ButtonDown.pressing())
-    {
-      flywheel.spin(reverse,12.0,voltageUnits::volt);
-    }
-    
-    else if(Controller1.ButtonLeft.pressing())
-    {
-      flywheel.stop();
-    }
-    wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
-  }
+  
 }
 
 //
@@ -730,6 +661,261 @@ void usercontrol(void)
 //
 int main() 
 {
+  wait(4, sec);
+  /////////////////////////////////////////////
+  //     FIRST GOAL
+  /////////////////////////////////////////////
+  
+  //goal 1 (hodd lifting up and scoring)
+  InertialSensor.setHeading(0, deg);
+  flywheel.setVelocity(100,percent);
+  flywheel.spinFor(forward,-380,degrees);
+  flywheel.stop();
+
+  //////////////////////////////////////////////
+  //    SECOND GOAL
+  //////////////////////////////////////////////
+
+  intake_open();
+
+  //moves forward away from the goal
+  drive_fwd(40,850);
+  flywheel.stop(coast);
+  //opens the intake to intake first ball 
+  leftIntake.spin(forward, 12.0, voltageUnits::volt);
+  rightIntake.spin(forward, 12.0, voltageUnits::volt);
+  indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+  //drive_fwd(40,100);
+
+
+  //waits a second so the ball can go in
+  wait(.35, sec);
+  indexerMotor.stop(coast); 
+
+  //moves toward corner goal
+  InertialSensor.setHeading(0, degrees);
+  Brain.Screen.printAt(100, 100, "Sensor Value: %f", InertialSensor.value());
+  drive_fwd(40,600); //value between intaking first ball and turning before goal
+  drive_tl(-65);
+  drive_fwd(40,735);
+  flywheel.spin(reverse, 12.0, voltageUnits::volt);
+  indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+  leftIntake.stop(); 
+  rightIntake.stop();
+  //waits until the ball exits the system and scores into the corner goal (2nd goal)
+  while (!BallExit.pressing()) 
+  {
+
+  }
+  //waits a second so we know it has deffinitly left the system 
+  wait(.2, seconds); 
+  flywheel.stop();
+
+  /////////////////////////////////////////////////
+  //    THIRD GOAL
+  /////////////////////////////////////////////////
+ 
+  //backs away from the goal, opens intakes, turns, and heads towards the ball in front of the third goal
+  drive_bwd(40,1700);
+  intake_open();
+  drive_tr(89);
+  intake_open();
+  drive_fwd(40, 1520);
+  
+  //starts intaking the ball and keeps going until it is in the system (triggered by ballDetect), then turns everything off
+  leftIntake.spin(fwd,12.0,voltageUnits::volt);
+  rightIntake.spin(fwd,12.0,voltageUnits::volt);
+  while(!BallDetect.pressing())
+  {
+
+  }
+  wait(300, msec);
+  indexerMotor.stop();
+  leftIntake.stop();
+  rightIntake.stop();
+
+  //turns towards the third goal and approaches it.
+  drive_tl(-45);
+  intake_open();
+  drive_fwd(25,350);
+  driveLB.spin(forward, 6.0, voltageUnits::volt);
+  driveLF.spin(forward, 6.0, voltageUnits::volt);
+  driveRB.spin(forward, 6.0, voltageUnits::volt);
+  driveRF.spin(forward, 6.0, voltageUnits::volt);
+  wait(150, msec);
+  driveLB.stop();
+  driveLF.stop();
+  driveRB.stop();
+  driveRF.stop();
+
+  //runs the indexer and flywheel until the ball leaves the system 
+  while(!BallExit.pressing())
+  {
+    flywheel.spin(reverse,12.0,voltageUnits::volt);
+    indexerMotor.spin(reverse,12.0,voltageUnits::volt);
+  }
+  //wait sometime to make sure the ball leaves the system then stops the motors 
+  wait(800,msec);
+  flywheel.stop();
+  indexerMotor.stop();
+
+  //////////////////////////////////////////////////////////////////////
+  //      FOURTH GOAL
+  //////////////////////////////////////////////////////////////////////
+
+  //backs away from the goal and starts heading towards the ball for the first goal
+  drive_bwd(30,610);
+  wait(500, msec);
+  drive_tr(85);
+  intake_open();
+  drive_fwd(40,1600);
+
+  //intakes ball for fourth goal
+  while(BallDetect.value() == 0)
+  {
+    rightIntake.spin(fwd, 12.0, voltageUnits::volt);
+    leftIntake.spin(fwd, 12.0, voltageUnits::volt);
+    indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+  }
+  wait(200, msec);
+  rightIntake.stop(coast);
+  leftIntake.stop(coast);
+  indexerMotor.stop(coast);
+
+
+  //turns and heads towards the fourth goal
+  drive_tl(-45);
+  //intake_open();
+  drive_fwd(40,1100); 
+  driveLB.spin(fwd, 30, percent);
+  driveLF.spin(forward, 30, percent);
+  driveRB.spin(forward, 30, percent);
+  driveRF.spin(forward, 30, percent);
+  wait(200, msec);
+  driveLB.stop();
+  driveLF.stop();
+  driveRB.stop();
+  driveRF.stop();
+
+  //luanch ball into goal
+  while(!BallExit.pressing())
+  {
+    flywheel.spin(reverse,12.0,voltageUnits::volt);
+    indexerMotor.spin(reverse,12.0,voltageUnits::volt);
+  }
+  wait(500, msec);
+  flywheel.stop(coast); 
+  indexerMotor.stop(coast);
+
+  ///////////////////////////////////////////////
+  //     FITH GOAL
+  //////////////////////////////////////////////
+
+  //backs away from goal
+  drive_bwd(30, 590);
+  drive_tr(136);
+  //drive_bwd(30, 810);
+  driveLB.spin(reverse, 6.0, voltageUnits::volt);
+  driveLF.spin(reverse, 6.0, voltageUnits::volt);
+  driveRB.spin(reverse, 6.0, voltageUnits::volt);
+  driveRF.spin(reverse, 6.0, voltageUnits::volt);
+  wait(1000, msec);
+  driveLB.stop(coast);
+  driveLF.stop(coast);
+  driveRB.stop(coast);
+  driveRF.stop(coast); 
+  wait(200, msec);
+
+  //drives forward to the next ball
+  drive_fwd(30, 1600);
+  intake_open();//remove when full code is running
+  drive_tr(43);
+  drive_fwd(30, 1100);
+  
+
+  //pick up ball
+  while(BallDetect.value() == 0)
+  {
+    rightIntake.spin(fwd, 12.0, voltageUnits::volt);
+    leftIntake.spin(fwd, 12.0, voltageUnits::volt);
+    indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+  }
+  wait(200, msec);
+  rightIntake.stop(coast);
+  leftIntake.stop(coast);
+  indexerMotor.stop(coast);
+
+  //turns and moves towards goal
+  drive_fwd(30, 220);
+  drive_tl(-131);
+  drive_fwd(30, 1280);
+  driveLB.spin(fwd, 30, percent);
+  driveLF.spin(forward, 30, percent);
+  driveRB.spin(forward, 30, percent);
+  driveRF.spin(forward, 30, percent);
+  wait(200, msec);
+  driveLB.stop();
+  driveLF.stop();
+  driveRB.stop();
+  driveRF.stop();
+
+  //luanch ball into goal
+  while(!BallExit.pressing())
+  {
+    flywheel.spin(reverse,12.0,voltageUnits::volt);
+    indexerMotor.spin(reverse,12.0,voltageUnits::volt);
+  }
+  wait(500, msec);
+  flywheel.stop(coast); 
+  indexerMotor.stop(coast);
+
+  //////////////////////////////////////
+  //  Sixth Goal
+  //////////////////////////////////////
+
+  //backup and move towards the ball
+  drive_bwd(30, 600);
+  drive_tr(70);
+  intake_open();
+  drive_fwd(30, 1200);
+
+  //pick up ball
+  while(BallDetect.value() == 0)
+  {
+    rightIntake.spin(fwd, 12.0, voltageUnits::volt);
+    leftIntake.spin(fwd, 12.0, voltageUnits::volt);
+    indexerMotor.spin(reverse, 12.0, voltageUnits::volt);
+  }
+  wait(200, msec);
+  rightIntake.stop(coast);
+  leftIntake.stop(coast);
+  indexerMotor.stop(coast);
+
+  //drives towards goal
+  drive_fwd(30, 1000);
+  drive_tl(-15);
+  drive_fwd(20, 150);
+
+  driveLB.spin(fwd, 30, percent);
+  driveLF.spin(forward, 30, percent);
+  driveRB.spin(forward, 30, percent);
+  driveRF.spin(forward, 30, percent);
+  wait(200, msec);
+  driveLB.stop();
+  driveLF.stop();
+  driveRB.stop();
+  driveRF.stop();
+
+  //luanch ball into goal
+  while(!BallExit.pressing())
+  {
+    flywheel.spin(reverse,12.0,voltageUnits::volt);
+    indexerMotor.spin(reverse,12.0,voltageUnits::volt);
+  }
+  wait(500, msec);
+  flywheel.stop(coast); 
+  indexerMotor.stop(coast);
+  /*
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
@@ -741,5 +927,5 @@ int main()
   while (true) 
   {
     wait(100, msec);
-  }
+  }*/
 }
