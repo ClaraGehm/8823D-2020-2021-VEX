@@ -41,7 +41,7 @@ competition Competition;
 
     int Axis3Cap = 0;
     int NegAxis3Cap = 0;
-    int step = 1;
+    int step = 2;
 
 // define your global instances of motors and other devices here
 double turnkP = .5;     //tuning value for our turnError.
