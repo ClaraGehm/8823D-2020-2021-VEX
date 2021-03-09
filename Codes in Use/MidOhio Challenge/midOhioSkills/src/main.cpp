@@ -247,9 +247,9 @@ void drive_fwd(int dist)
       speed = -5;
     }
 
-    if (speed > 0 && speed < 4)
+    if (speed > 0 && speed < 6)
     {
-      speed = 4;
+      speed = 6;
     }
     //checks to see if the robot is above the number of ticks it should go
     if(leftEncoder.value() >= dist && rightEncoder.value() >= dist)
@@ -286,6 +286,7 @@ void drive_fwd(int dist)
     printf("speed: %d\n", speed);
     printf("lefI: %f\n", leftInertial.value());
     printf("rightI: %f\n", rightInertial.value());
+    printf("leftE: %d\n", leftEncoder.value());
   }
   printf("leftE: %d\n\n", leftEncoder.value());
   printf("left: %f\n", leftInertial.value());
@@ -394,10 +395,10 @@ void autonomous(void)
   //moves toward corner goal
 
   drive_fwd(690); //value between intaking first ball and turning before goal
-  drive_tl(-71);
+  drive_tl(-78);
   leftIntake.stop();
   rightIntake.stop();
-  drive_fwd(1000);
+  drive_fwd(763);
   flywheel.spin(forward, 12.0, voltageUnits::volt);
   indexerMotor.spin(forward, 12.0, voltageUnits::volt);
   //waits until the ball exits the system and scores into the corner goal (2nd goal)
@@ -412,9 +413,11 @@ void autonomous(void)
   leftIntake.spin(forward, 12.0, voltageUnits::volt);
   rightIntake.spin(forward, 12.0, voltageUnits::volt);
   while (!BallDetect.pressing()) {  } //this waits Until the blUe balls from the goal are in the robot before it backs away
+  /*
   while (BallDetect.pressing())  {  }
   indexerMotor.spin(forward);
-  while (!BallDetect.pressing()) {  }
+  while (!BallDetect.pressing()) {  }*/
+  //wait(300, msec);
   indexerMotor.stop();
   leftIntake.stop();
   rightIntake.stop();
@@ -426,13 +429,18 @@ void autonomous(void)
   //backs away from the goal, opens intakes, turns, and heads towards the ball in front of the third goal
   drive_bwd(40, 1840);
   flywheel.spin(fwd, 110, percent);
-  intake_open();
+  //intake_open();
   flywheel.stop();
-  drive_tr(89);
+  drive_tr(91);
 
   //Kicks the balls out the back
+  leftIntake.spin(forward, 12.0, voltageUnits::volt);
+  rightIntake.spin(forward, 12.0, voltageUnits::volt);
   flywheel.spin(reverse, 12.0, voltageUnits::volt);
   indexerMotor.spin(forward, 12.0, voltageUnits::volt);
+  wait(300, msec);
+  leftIntake.stop();
+  rightIntake.stop();
   intake_open();
   drive_fwd(975);
   flywheel.stop();
@@ -449,12 +457,12 @@ void autonomous(void)
   leftIntake.stop();
   rightIntake.stop();
 
-  drive_fwd(380);
+  drive_fwd(373);
 
   //turns towards the third goal and approaches it.
-  drive_tl(-40);
+  drive_tl(-40);                                                  ////////////FIX/////////////////////////////////////////////////////////////////
   intake_open();
-  drive_fwd(310);
+  drive_fwd(300);
 
   //runs the indexer and flywheel until the ball leaves the system 
   while(!BallExit.pressing())
@@ -472,11 +480,11 @@ void autonomous(void)
   //////////////////////////////////////////////////////////////////////
 
   //backs away from the goal and starts heading towards the ball for the first goal
-  drive_bwd(30,660);
+  drive_bwd(30,730);
   wait(500, msec);
-  drive_tr(90);
+  drive_tr(95);
   intake_open();
-  drive_fwd(1900);
+  drive_fwd(1850);
 
   //intakes ball for fourth goal
   while(BallDetect.value() == 0)
@@ -583,7 +591,7 @@ void autonomous(void)
 
   //backup and move towards the ball
   drive_bwd(30, 600);
-  drive_tr(70);                                        ////////////BIGGER
+  drive_tr(75);                                        ////////////BIGGER
   intake_open();
   drive_fwd(1200);
 
