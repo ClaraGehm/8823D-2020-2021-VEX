@@ -72,7 +72,7 @@ int end = 0;
 
 ///////////////////////////Proportional Turn variables//////////////////////////////////////////////////////////////////
 
-  double turnkP = .7;     //tuning value for our turnError.
+  double turnkP = .5;     //tuning value for our turnError.
   double turnSpeed = 0; // motor speed, starts at zero.
   double turnError; // the difference between our turnTarget and our current position
   double avgRotation;
@@ -100,8 +100,8 @@ void drive_tr(int target) //setting target as a parameter to be
     Brain.Screen.printAt(90,90,"turnSpeed %f",turnSpeed);
 
       //maximum motorspeed: 40%
-    if(turnSpeed < 7)
-    {turnSpeed = 7;}
+    if(turnSpeed < 4)
+    {turnSpeed = 4;}
       //mininum motorspeed: 10%
 
     driveLB.spin(forward,turnSpeed,pct);
@@ -169,8 +169,8 @@ void drive_tl(int target) //setting target as a parameter to be
     
     Brain.Screen.printAt(50,90,"turnSpeed %f",turnSpeed);
 
-    //if(turnSpeed > -3)
-    //{turnSpeed = -3;}
+    if(turnSpeed > -4)
+    {turnSpeed = -4;}
     
     driveLB.spin(forward,turnSpeed,pct);
     driveLF.spin(forward,turnSpeed,pct);
@@ -394,11 +394,12 @@ void autonomous(void)
 
   //moves toward corner goal
 
-  drive_fwd(690); //value between intaking first ball and turning before goal
-  drive_tl(-78);
+  drive_fwd(760); //value between intaking first ball and turning before goal
+  drive_tl(-73);
+  wait(.35, sec);
   leftIntake.stop();
   rightIntake.stop();
-  drive_fwd(763);
+  drive_fwd(790);
   flywheel.spin(forward, 12.0, voltageUnits::volt);
   indexerMotor.spin(forward, 12.0, voltageUnits::volt);
   //waits until the ball exits the system and scores into the corner goal (2nd goal)
@@ -431,7 +432,7 @@ void autonomous(void)
   flywheel.spin(fwd, 110, percent);
   //intake_open();
   flywheel.stop();
-  drive_tr(91);
+  drive_tr(96);
 
   //Kicks the balls out the back
   leftIntake.spin(forward, 12.0, voltageUnits::volt);
@@ -442,7 +443,7 @@ void autonomous(void)
   leftIntake.stop();
   rightIntake.stop();
   intake_open();
-  drive_fwd(975);
+  drive_fwd(855);
   flywheel.stop();
   
   //starts intaking the ball and keeps going until it is in the system (triggered by ballDetect), then turns everything off
@@ -457,12 +458,12 @@ void autonomous(void)
   leftIntake.stop();
   rightIntake.stop();
 
-  drive_fwd(373);
+  drive_fwd(200);
 
   //turns towards the third goal and approaches it.
   drive_tl(-40);                                                  ////////////FIX/////////////////////////////////////////////////////////////////
   intake_open();
-  drive_fwd(300);
+  drive_fwd(200);
 
   //runs the indexer and flywheel until the ball leaves the system 
   while(!BallExit.pressing())
@@ -480,11 +481,11 @@ void autonomous(void)
   //////////////////////////////////////////////////////////////////////
 
   //backs away from the goal and starts heading towards the ball for the first goal
-  drive_bwd(30,730);
+  drive_bwd(30,710);
   wait(500, msec);
-  drive_tr(95);
+  drive_tr(92);
   intake_open();
-  drive_fwd(1850);
+  drive_fwd(1500);
 
   //intakes ball for fourth goal
   while(BallDetect.value() == 0)
@@ -500,9 +501,9 @@ void autonomous(void)
 
 
   //turns and heads towards the fourth goal
-  drive_tl(-60);
+  drive_tl(-51);
   //intake_open();
-  drive_fwd(1100); 
+  drive_fwd(1300); 
   driveLB.spin(fwd, 30, percent);
   driveLF.spin(forward, 30, percent);
   driveRB.spin(forward, 30, percent);
@@ -545,7 +546,7 @@ void autonomous(void)
   //drives forward to the next ball
   drive_fwd(1600);
   intake_open();//remove when full code is running
-  drive_tr(43);
+  drive_tr(53);
   drive_fwd(1100);
   
 
@@ -563,7 +564,7 @@ void autonomous(void)
 
   //turns and moves towards goal
   drive_fwd(220);
-  drive_tl(-131);
+  drive_tl(-133);
   drive_fwd(1280);
   driveLB.spin(fwd, 30, percent);
   driveLF.spin(forward, 30, percent);
@@ -591,7 +592,7 @@ void autonomous(void)
 
   //backup and move towards the ball
   drive_bwd(30, 600);
-  drive_tr(75);                                        ////////////BIGGER
+  drive_tr(79);                                        ////////////BIGGER
   intake_open();
   drive_fwd(1200);
 
@@ -609,7 +610,7 @@ void autonomous(void)
 
   //drives towards goal
   drive_fwd(1000);
-  drive_tl(-15);
+  drive_tl(-25);
   drive_fwd(150);
 
   driveLB.spin(fwd, 30, percent);
