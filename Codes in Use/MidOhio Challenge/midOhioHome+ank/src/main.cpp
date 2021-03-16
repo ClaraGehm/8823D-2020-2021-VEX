@@ -391,7 +391,7 @@ void autonomous(void)
   rightIntake.spin(forward, 100, pct);
 
   //turns towards far corner goal
-  drive_tl(-110);
+  drive_tl(-120);
 
   //drives towards the goal
   drive_fwdNoStop(25, 500);
