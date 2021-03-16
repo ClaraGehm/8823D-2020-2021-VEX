@@ -458,12 +458,12 @@ void autonomous(void)
   leftIntake.stop();
   rightIntake.stop();
 
-  drive_fwd(200);
+  drive_fwd(330);
 
   //turns towards the third goal and approaches it.
   drive_tl(-40);                                                  ////////////FIX/////////////////////////////////////////////////////////////////
   intake_open();
-  drive_fwd(200);
+  drive_fwd(500);
 
   //runs the indexer and flywheel until the ball leaves the system 
   while(!BallExit.pressing())
@@ -481,11 +481,11 @@ void autonomous(void)
   //////////////////////////////////////////////////////////////////////
 
   //backs away from the goal and starts heading towards the ball for the first goal
-  drive_bwd(30,710);
+  drive_bwd(30,690);
   wait(500, msec);
   drive_tr(92);
   intake_open();
-  drive_fwd(1500);
+  drive_fwd(1510);
 
   //intakes ball for fourth goal
   while(BallDetect.value() == 0)
