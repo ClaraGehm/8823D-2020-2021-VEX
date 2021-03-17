@@ -52,12 +52,12 @@ competition Competition;
 double currentRotations = 0;
 double prevRotations = 0;
 int firstLoop = 0;
-double kP;
+double kP, diffrencekP;
 double kD, derivative;
 double target;
-double error;
+double error, diffrenceError;
 double prevError; 
-int speed, speedR;
+double speed, speedR;
 double currentDist, dist;
 double totalDist;
 double speedCap = 60;
@@ -221,10 +221,11 @@ void drive_fwd(int dist)
   leftEncoder.setPosition(0, deg);
   rightEncoder.setPosition(0, deg);
   Brain.Screen.setPenColor(white);
-  kP = .09;
+  kP = .093;                          //.12
   speedCap = 80;
   leftInertial.setRotation(0, deg);
   rightInertial.setRotation(0, deg);
+  diffrencekP = .15;
   while (Brain.Timer.value() < .3)
   {
     Brain.Screen.printAt(50, 200, "entered loop");
@@ -240,11 +241,15 @@ void drive_fwd(int dist)
     speedR = speed;
 
     //////////////////////////////////////////////SpEED CHECKS///////////////////////////////////////////
+    if (speedR > speedCap)                   //puts a top cap on the speed
+    {
+      speedR = speedCap;
+    }
     if (speed > speedCap)                   //puts a top cap on the speed
     {
       speed = speedCap;
     }
-    else if (0 > speed && speed > -3)           //if the robot goes too far, it backs up
+    if (0 > speed && speed > -3)           //if the robot goes too far, it backs up
     {
       speed = -5;
     }
@@ -252,19 +257,17 @@ void drive_fwd(int dist)
     {
       speed = 6;
     }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Comment Out??????
-    if(leftEncoder.value() < rightEncoder.value())
-    {
-      speedR = speedR - 2;
-    }
-    else if(leftEncoder.value() > rightEncoder.value())
-    {
-      speed = speed - 2;
-    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    diffrenceError = rightEncoder.value() - leftEncoder.value();
 
+    if(leftEncoder.value() != rightEncoder.value())
+    {
+      speed = speed + (diffrenceError*diffrencekP);
+    }
+    
     ///////////////////////////////////////////CODE ENDING////////////////////////////////////////////////////////
     //checks to see if the robot is above the number of ticks it should go
-    if(leftEncoder.value() >= dist && rightEncoder.value() >= dist)
+    if(rightEncoder.value() >= dist)
     {
       driveLB.stop(coast);
       driveRB.stop(coast);
@@ -296,11 +299,12 @@ void drive_fwd(int dist)
     Brain.Screen.printAt(50, 30, "speed: %d", speed);
     Brain.Screen.printAt(50, 50, "heading %5.2d", rightEncoder.value());
     Brain.Screen.printAt(50, 100, "heading %5.2d", leftEncoder.value());
-    printf("speed: %d\n", speed);
-    printf("lefI: %f\n", leftInertial.value());
-    printf("rightI: %f\n", rightInertial.value());
-    printf("leftE: %f\n", leftEncoder.value());
-    printf("rightE: %f\n\n", rightEncoder.value());
+    printf("speed: %f\n", speed);
+    printf("speedR: %f\n", speedR);
+    printf("lefI: %ld\n", leftInertial.value());
+    printf("rightI: %ld\n", rightInertial.value());
+    printf("leftE: %ld\n", leftEncoder.value());
+    printf("rightE: %ld\n\n", rightEncoder.value());
   }
   driveLB.stop(coast);
   driveRB.stop(coast);
@@ -373,7 +377,7 @@ void pre_auton(void) {
 
 void autonomous(void) 
 {
-  drive_fwd(1000);
+  drive_fwd(2000);
 }
 
 /*---------------------------------------------------------------------------*/
