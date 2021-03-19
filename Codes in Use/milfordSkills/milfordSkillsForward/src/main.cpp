@@ -221,11 +221,11 @@ void drive_fwd(int dist)
   leftEncoder.setPosition(0, deg);
   rightEncoder.setPosition(0, deg);
   Brain.Screen.setPenColor(white);
-  kP = .093;                          //.12
+  kP = .093;                          //.093
   speedCap = 80;
   leftInertial.setRotation(0, deg);
   rightInertial.setRotation(0, deg);
-  diffrencekP = .15;
+  diffrencekP = .099;                    //.8 did not jerk
   while (Brain.Timer.value() < .3)
   {
     Brain.Screen.printAt(50, 200, "entered loop");
@@ -253,18 +253,29 @@ void drive_fwd(int dist)
     {
       speed = -5;
     }
-    else if (speed > 0 && speed < 6)            //min speed
+    if (0 > speedR && speedR > -3)           //if the robot goes too far, it backs up
     {
-      speed = 6;
+      speedR = -5;
+    }
+    if (speed > 0 && speed < 10)            //min speed
+    {
+      speed = 10;
+    }
+    if (speedR > 0 && speedR < 10)
+    {
+      speedR = 10;
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     diffrenceError = rightEncoder.value() - leftEncoder.value();
 
-    if(leftEncoder.value() != rightEncoder.value())
+    if(rightEncoder.value() < dist*.8)
     {
-      speed = speed + (diffrenceError*diffrencekP);
+      if(leftEncoder.value() != rightEncoder.value())
+      {
+        speed = speed + (diffrenceError*diffrencekP);
+        printf("Coo=recctions are being made\n");
+      }
     }
-    
     ///////////////////////////////////////////CODE ENDING////////////////////////////////////////////////////////
     //checks to see if the robot is above the number of ticks it should go
     if(rightEncoder.value() >= dist)
@@ -306,10 +317,10 @@ void drive_fwd(int dist)
     printf("leftE: %ld\n", leftEncoder.value());
     printf("rightE: %ld\n\n", rightEncoder.value());
   }
-  driveLB.stop(coast);
-  driveRB.stop(coast);
-  driveLF.stop(coast);
-  driveRF.stop(coast);
+  driveLB.stop(brake);
+  driveRB.stop(brake);
+  driveLF.stop(brake);
+  driveRF.stop(brake);
   Brain.Screen.printAt(50, 150, "done:");
 }
 
